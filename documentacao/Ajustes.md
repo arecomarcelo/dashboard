@@ -208,4 +208,12 @@
     - Pasta local movida: `/media/areco/Backup/Oficial/Projetos/sgd` → `/media/areco/Backup/Oficial/Projetos/nova-estrutura/dashboard` (venv recriada do zero; `manage.py check` OK)
     - Memória Claude Code migrada para o novo path-hash (`~/.claude/projects/-media-areco-Backup-Oficial-Projetos-nova-estrutura-dashboard/memory/`)
     - Banco de dados: sem alteração (conecta direto no banco legado `sga`, schema `public`, sem `DB_SCHEMA` dedicado)
-    - Pendente (commit de follow-up): efetivar a troca da stack Docker Swarm de produção (`sgd` → `dashboard`) na VPS — domínio/vhost OpenLiteSpeed (`dashboard.oficialsport.com.br`) não mudam, já nasceram com o nome novo
+    - Efetivada a troca da stack Docker Swarm de produção (`sgd` → `dashboard`) na VPS — domínio/vhost OpenLiteSpeed (`dashboard.oficialsport.com.br`) não mudaram, já nasceram com o nome novo
+    - Streamlit Community Cloud: app legado paralelo ("sgd") excluído (mesmo tratamento já dado ao SGR) — produção real já é 100% Docker Swarm
+
+### **13:57 - Commit 23**
+
+- Follow-up do ajuste de nome SGD → DashBoard: confirmação da migração de produção
+    - VPS: `git remote` do clone em `/home/deploy/apps/` atualizado para `arecomarcelo/dashboard`, `git pull` trazendo o `stack.yml` já ajustado
+    - `docker stack rm sgd` → `mv /home/deploy/apps/sgd /home/deploy/apps/dashboard` → `docker stack deploy -c stack.yml dashboard --with-registry-auth`
+    - Validado: `dashboard_web` 1/1 saudável, `https://dashboard.oficialsport.com.br` responde 200 com dados reais (Ranking de Vendedores validado visualmente no navegador)

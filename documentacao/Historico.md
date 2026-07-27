@@ -4421,6 +4421,26 @@ Executar a skill `ajustar-nome-app` para renomear o projeto de "SGD" para "DashB
 - 🌐 **RENOMEADO** (fora do repositório): repositório GitHub `arecomarcelo/sgd` → `arecomarcelo/dashboard`
 - 📁 **MOVIDO** (fora do repositório): pasta local `Projetos/sgd` → `Projetos/nova-estrutura/dashboard`
 - ❌ **EXCLUÍDO** (fora do repositório): app "sgd" no Streamlit Community Cloud
-- ⏳ **PENDENTE** (commit de follow-up): troca da stack Docker Swarm de produção na VPS (`sgd` → `dashboard`)
+
+---
+
+### ⏰ 13:57 - Follow-up: Migração da Stack Docker Swarm de Produção (SGD → DashBoard)
+
+**📋 O que foi pedido:**
+Completar o ajuste de nome iniciado na interação anterior, efetivando a troca da stack Docker Swarm de produção na VPS (`sgd` → `dashboard`), com confirmação explícita já obtida do usuário.
+
+**🔧 Detalhamento da Solução:**
+1. Na VPS (`195.200.1.244`), dentro do clone em `/home/deploy/apps/sgd`: `git remote set-url origin` atualizado para `git@github.com:arecomarcelo/dashboard.git`, seguido de `git pull origin master` (trouxe o `stack.yml` já com imagem/rótulos Traefik `dashboard`).
+2. `docker stack rm sgd` — removeu o serviço `sgd_web`, liberando a porta `127.0.0.1:8113` publicada (aguardado até a stack sumir de `docker stack ls`).
+3. `mv /home/deploy/apps/sgd /home/deploy/apps/dashboard` (pasta renomeada na VPS, `.env` real preservado no `mv`).
+4. `docker stack deploy -c stack.yml dashboard --with-registry-auth` — novo serviço `dashboard_web` subiu saudável (`1/1`, healthcheck `/_stcore/health` OK) em ~35s.
+5. **Validação:** `curl -I https://dashboard.oficialsport.com.br` → `200`; validação visual no navegador (Chrome automatizado) confirmou o slideshow renderizando dados reais de produção (painel Ranking de Vendedores, timestamp de atualização batendo com o horário do deploy) — sem regressão perceptível na troca de stack.
+6. Sem impacto em banco de dados (o app não tem volume/schema próprio atrelado ao nome da stack).
+
+**⚠️ Observação:** houve uma janela breve de indisponibilidade entre o `docker stack rm sgd` e o `dashboard_web` ficar saudável (poucos segundos) — esperado e aceito pelo usuário antecipadamente, já que o domínio/vhost não mudaram.
+
+**📁 Arquivos Alterados:**
+- 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
+- 🌐 **ALTERADO** (fora do repositório, na VPS): `git remote` do clone de produção; stack Docker Swarm `sgd` → `dashboard`; pasta `/home/deploy/apps/sgd` → `/home/deploy/apps/dashboard`
 
 ---
