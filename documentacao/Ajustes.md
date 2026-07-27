@@ -240,3 +240,12 @@
 ### **15:48 - Commit 27**
 
 - `scripts/deploy_local.sh`: removida a ressalva desatualizada "(depende do DNS já ter sido provisionado)" da mensagem final de sucesso — domínio já está provisionado e validado em produção há tempo
+
+### **16:25 - Commit 28**
+
+- `scripts/deploy_local.sh`: adicionado bloco de notificação `POST /api/v1/deploy/` ao InfraFlow após o deploy bem-sucedido na VPS, replicando o padrão já usado pelas apps do ambiente hauxtech (HireFlow, InfraFlow, CoreFlow Stock, TimeFlow, StreamKeeper).
+- Autenticação via `Bearer $OFICIAL_DEPLOY_TOKEN` (nova variável, reaproveita o token do Ambiente "Oficial Sport" / `vps_oficial_sport_hostinger`, já usado pelo agente `monitor-vps` na Hostinger — configurada no `~/.zshrc`).
+- `nome_app` enviado: `dashboard` — alinhado com a chave usada em `DOCKER_APPS` do `monitor-vps` (`/opt/vps-report/config.py`), para a correlação deploy→erros funcionar corretamente.
+- Falha na notificação nunca bloqueia o deploy (curl não-fatal).
+
+Realizado em Note_Casa via Claude Code.

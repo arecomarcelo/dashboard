@@ -115,6 +115,24 @@ else
 fi
 echo ""
 
+# ─── Notificar deploy ao InfraFlow ───────────────────────────────────────────
+if [ -n "$OFICIAL_DEPLOY_TOKEN" ]; then
+    echo -e "${CYAN}▶ Notificando deploy ao InfraFlow...${NC}"
+    DESCRICAO=$(git log -1 --pretty=%s | sed 's/"/\\"/g')
+    if curl -sf -X POST "https://infraflow.hauxtech.com.br/api/v1/deploy/" \
+        -H "Authorization: Bearer ${OFICIAL_DEPLOY_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "{\"nome_app\": \"dashboard\", \"versao\": \"$(git rev-parse --short HEAD)\", \"descricao\": \"${DESCRICAO}\", \"realizado_em\": \"$(TZ='America/Sao_Paulo' date -Iseconds)\"}" \
+        > /dev/null; then
+        echo -e "${GREEN}✅ Deploy registrado no InfraFlow.${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Não foi possível notificar o InfraFlow (deploy já concluído normalmente).${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  OFICIAL_DEPLOY_TOKEN não configurado — deploy não notificado ao InfraFlow.${NC}"
+fi
+echo ""
+
 # ─── 5. Verificar status ─────────────────────────────────────────────────────
 echo -e "${CYAN}▶ [4/4] Status das réplicas na VPS...${NC}"
 ssh -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "docker service ls | grep dashboard"
