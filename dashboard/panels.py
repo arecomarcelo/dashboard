@@ -3,8 +3,10 @@ Painéis de visualização para os dashboards do DashBoard
 Réplicas EXATAS dos layouts do SGR conforme imagens de referência
 """
 
+import base64
 from datetime import date, datetime
 from decimal import Decimal
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -18,6 +20,50 @@ try:
 except ImportError:
     # Se não tiver instalado, criar fallback
     pass
+
+# Lista completa de vendedores (mesma ordem do SGR) — Nome → ID da foto (1-12.png)
+# Compartilhada entre render_ranking_vendedores e render_resumo_dia.
+VENDEDORES_TABELA = [
+    {"nome": "Noé Dutra", "foto": "1"},
+    {"nome": "Nilton Jonas Gonçalves de Moraes", "foto": "2"},
+    {"nome": "César Henrique Rodrigues", "foto": "3"},
+    {"nome": "Rocha Jr.", "foto": "4"},
+    {"nome": "Diney Scalabrini", "foto": "5"},
+    {"nome": "João Paulo", "foto": "6"},
+    {"nome": "Lauro Jarbas de Oliveira", "foto": "7"},
+    {"nome": "Giovana Lelis", "foto": "8"},
+    {"nome": "Carlos Gabriel Carvalho Macedo", "foto": "9"},
+    {"nome": "Cássio Gadagnoto", "foto": "10"},
+    {"nome": "André Souza", "foto": "11"},
+    {"nome": "João Victor", "foto": "12"},
+]
+
+
+def get_vendedor_foto(foto_id):
+    """Carrega foto do vendedor em base64 (imagens/fotos/<id>.jpg|png)"""
+    fotos_dir = Path("imagens/fotos")
+    for ext in ['.jpg', '.png']:
+        foto_path = fotos_dir / f"{foto_id}{ext}"
+        if foto_path.exists():
+            try:
+                with open(foto_path, "rb") as f:
+                    img_data = base64.b64encode(f.read()).decode('utf-8')
+                    return f"data:image/png;base64,{img_data}"
+            except Exception:
+                continue
+    return None
+
+
+def get_gradient(rank):
+    """Gradiente do card de ranking por posição (ouro/prata/bronze/padrão)"""
+    if rank == 1:
+        return "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)"  # Ouro
+    elif rank == 2:
+        return "linear-gradient(135deg, #C0C0C0 0%, #808080 100%)"  # Prata
+    elif rank == 3:
+        return "linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)"  # Bronze
+    else:
+        return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"  # Roxo padrão
 
 
 def get_filtros_periodo():
@@ -551,29 +597,11 @@ def render_ranking_vendedores(theme='dark'):
     Renderiza painel Ranking Vendedores - ADAPT ADO DO SGR
     Lógica completa de cálculos e exibição de fotos do SGR
     """
-    import base64
-    import os
     from datetime import datetime
-    from pathlib import Path
 
     from dateutil.relativedelta import relativedelta
 
-    # Lista completa de vendedores (mesma ordem do SGR)
-    # Nome → ID da foto (1-10.png)
-    vendedores_tabela = [
-        {"nome": "Noé Dutra", "foto": "1"},
-        {"nome": "Nilton Jonas Gonçalves de Moraes", "foto": "2"},
-        {"nome": "César Henrique Rodrigues", "foto": "3"},
-        {"nome": "Rocha Jr.", "foto": "4"},
-        {"nome": "Diney Scalabrini", "foto": "5"},
-        {"nome": "João Paulo", "foto": "6"},
-        {"nome": "Lauro Jarbas de Oliveira", "foto": "7"},
-        {"nome": "Giovana Lelis", "foto": "8"},
-        {"nome": "Carlos Gabriel Carvalho Macedo", "foto": "9"},
-        {"nome": "Cássio Gadagnoto", "foto": "10"},
-        {"nome": "André Souza", "foto": "11"},
-        {"nome": "João Victor", "foto": "12"},
-    ]
+    vendedores_tabela = VENDEDORES_TABELA
 
     # Calcular período atual (mês atual)
     hoje = datetime.now()
@@ -671,24 +699,6 @@ def render_ranking_vendedores(theme='dark'):
     vendedores_ordenados = sorted(
         vendedores_completos, key=lambda x: x["total_valor"], reverse=True
     )
-
-    # Função para carregar foto em base64
-    def get_vendedor_foto(foto_id):
-        """Carrega foto do vendedor em base64"""
-        # Usar caminho relativo para funcionar em qualquer ambiente
-        fotos_dir = Path("imagens/fotos")
-
-        # Tentar .jpg primeiro, depois .png
-        for ext in ['.jpg', '.png']:
-            foto_path = fotos_dir / f"{foto_id}{ext}"
-            if foto_path.exists():
-                try:
-                    with open(foto_path, "rb") as f:
-                        img_data = base64.b64encode(f.read()).decode('utf-8')
-                        return f"data:image/png;base64,{img_data}"
-                except:
-                    continue
-        return None
 
     # Cores do tema
     if theme == 'dark':
@@ -1226,17 +1236,6 @@ def render_ranking_produtos(theme='dark'):
         bg_color = "#f0f0f0"
         text_color_primary = "#1a73e8"
 
-    # Função para determinar gradiente do card (mesmo do SGR)
-    def get_gradient(rank):
-        if rank == 1:
-            return "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)"  # Ouro
-        elif rank == 2:
-            return "linear-gradient(135deg, #C0C0C0 0%, #808080 100%)"  # Prata
-        elif rank == 3:
-            return "linear-gradient(135deg, #CD7F32 0%, #8B4513 100%)"  # Bronze
-        else:
-            return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"  # Roxo padrão
-
     # Gerar HTML dos cards
     cards_html = ""
     for idx, (produto, stats) in enumerate(ranking):
@@ -1411,3 +1410,437 @@ def render_ranking_produtos(theme='dark'):
     """
 
     components.html(html_content, height=700, scrolling=False)
+
+
+@st.cache_data(ttl=300)  # Cache de 5 minutos
+def get_vendas_dia_atual():
+    """
+    Busca vendas do dia atual (hoje), aplicando os mesmos filtros de
+    get_vendas_periodo (situações excluídas, apenas vendedores válidos).
+    """
+    hoje = date.today()
+
+    situacoes_excluidas = ["Cancelada (sem financeiro)", "Não considerar - Excluidos"]
+    vendedores_validos = set(Vendedores.objects.values_list('nome', flat=True))
+
+    vendas_filtradas = []
+    for venda in Vendas.objects.all():
+        try:
+            if venda.situacaonome in situacoes_excluidas:
+                continue
+
+            vendedor_nome = venda.vendedornome.strip() if venda.vendedornome else ""
+            if vendedor_nome not in vendedores_validos:
+                continue
+
+            if venda.data == hoje:
+                vendas_filtradas.append(venda)
+        except Exception:
+            continue
+
+    return vendas_filtradas
+
+
+def render_resumo_dia(theme='dark'):
+    """
+    Renderiza painel Resumo do Dia: card com o total vendido hoje, painel de
+    Vendedores (cards no mesmo estilo do Ranking de Vendedores, mas com o
+    total do dia) e painel de Produtos (cards no mesmo estilo do Ranking de
+    Produtos, restrito ao que foi vendido hoje).
+    """
+    hoje = date.today()
+    data_titulo = hoje.strftime("%d/%m/%Y")
+
+    vendas_dia = get_vendas_dia_atual()
+    total_dia = sum(parse_valor(v.valortotal) for v in vendas_dia)
+
+    # --- Vendedores: total do dia por vendedor (mesma lista fixa do Ranking) ---
+    vendedores_stats = {}
+    for venda in vendas_dia:
+        vendedor = venda.vendedornome
+        if not vendedor or vendedor.strip() == "":
+            continue
+        vendedores_stats[vendedor] = vendedores_stats.get(
+            vendedor, Decimal("0")
+        ) + parse_valor(venda.valortotal)
+
+    vendedores_dia = [
+        {
+            "nome": vendedor["nome"],
+            "foto": vendedor["foto"],
+            "total_valor": float(vendedores_stats.get(vendedor["nome"], Decimal("0"))),
+        }
+        for vendedor in VENDEDORES_TABELA
+    ]
+    # Somente vendedores com vendas hoje
+    vendedores_dia_ordenados = sorted(
+        (v for v in vendedores_dia if v["total_valor"] > 0),
+        key=lambda x: x["total_valor"],
+        reverse=True,
+    )
+
+    vendedores_cards_html = ""
+    for vendedor in vendedores_dia_ordenados:
+        foto_base64 = get_vendedor_foto(vendedor["foto"])
+        if foto_base64:
+            avatar_html = f'<img src="{foto_base64}" class="vendedor-avatar-img" />'
+        else:
+            iniciais = "".join(
+                [nome[0] for nome in vendedor["nome"].split()[:2]]
+            ).upper()
+            avatar_html = f'<div class="vendedor-avatar-iniciais">{iniciais}</div>'
+
+        # Somente foto + valor (sem nome)
+        vendedores_cards_html += f"""
+        <div class="vendedor-card">
+            <div class="vendedor-avatar">
+                {avatar_html}
+            </div>
+            <div class="vendedor-valor">{format_currency(vendedor["total_valor"])}</div>
+        </div>
+        """
+
+    if not vendedores_cards_html:
+        vendedores_cards_html = (
+            '<div class="sem-dados">👥 Nenhuma venda registrada hoje ainda</div>'
+        )
+
+    # --- Produtos: somente os vendidos hoje (mesmo TOP 10 do Ranking de Produtos) ---
+    vendas_ids_dia = [v.id_gestao for v in vendas_dia]
+    produtos_stats = {}
+    if vendas_ids_dia:
+        produtos_vendidos = VendaProdutos.objects.filter(venda_id__in=vendas_ids_dia)
+        for item in produtos_vendidos:
+            nome = item.nome.strip() if item.nome else "Produto sem nome"
+            qtd = parse_quantidade(item.quantidade)
+            if nome not in produtos_stats:
+                produtos_stats[nome] = {"quantidade": Decimal("0"), "num_vendas": 0}
+            produtos_stats[nome]["quantidade"] += qtd
+            produtos_stats[nome]["num_vendas"] += 1
+
+    ranking_produtos_dia = sorted(
+        produtos_stats.items(), key=lambda x: x[1]["quantidade"], reverse=True
+    )[:10]
+
+    produtos_cards_html = ""
+    for idx, (produto, stats) in enumerate(ranking_produtos_dia):
+        rank = idx + 1
+        gradient = get_gradient(rank)
+
+        produtos_cards_html += f"""
+        <div class="produto-card" style="background: {gradient};">
+            <div class="produto-rank">#{rank}</div>
+            <div class="produto-nome" title="{produto}">
+                {produto.upper()}
+            </div>
+            <div class="produto-metric">
+                <span class="produto-metric-label">📦 Qtd. Hoje</span>
+                <span class="produto-metric-value">{int(stats["quantidade"])}</span>
+            </div>
+            <div class="produto-metric">
+                <span class="produto-metric-label">🛒 Nº Vendas</span>
+                <span class="produto-metric-value">{stats["num_vendas"]}</span>
+            </div>
+        </div>
+        """
+
+    if not produtos_cards_html:
+        produtos_cards_html = (
+            '<div class="sem-dados">📦 Nenhum produto vendido hoje ainda</div>'
+        )
+
+    # Cores do tema Dracula at Night
+    if theme == 'dark':
+        bg_color = "#1a1d2e"
+        text_color_primary = "#8be9fd"
+        text_color_secondary = "#6272a4"
+        card_bg = "#000000"
+    else:
+        bg_color = "#f0f0f0"
+        text_color_primary = "#1a73e8"
+        text_color_secondary = "#5f6368"
+        card_bg = "#000000"
+
+    # Altura fixa (não 100vh): o script de auto-resize do slideshow nem sempre
+    # encolhe o iframe a tempo, e um painel alto demais fica coberto pelo
+    # rodapé fixo. 720px cabe com folga mesmo em janelas menores que uma TV.
+    panel_height = 720
+
+    html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }}
+                body {{
+                    margin: 0;
+                    padding: 0;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    background: {bg_color};
+                    overflow: hidden;
+                }}
+                .resumo-container {{
+                    background: {bg_color};
+                    width: 100vw;
+                    height: {panel_height}px;
+                    padding: 15px 30px 10px 30px;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }}
+                .resumo-header {{
+                    flex: 0 0 auto;
+                }}
+                .resumo-title {{
+                    color: {text_color_primary};
+                    font-size: 2rem;
+                    font-weight: 700;
+                    margin-bottom: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    text-align: center;
+                }}
+                .vendas-card {{
+                    background: {card_bg};
+                    border-radius: 16px;
+                    padding: 12px 40px;
+                    text-align: center;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+                    border: 1px solid #44475a;
+                    max-width: 500px;
+                    margin: 0 auto;
+                }}
+                .vendas-label {{
+                    color: #f8f8f2;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                }}
+                .vendas-valor {{
+                    color: {text_color_primary};
+                    font-size: 2.4rem;
+                    font-weight: 700;
+                    letter-spacing: -0.5px;
+                }}
+                .secao-titulo {{
+                    flex: 0 0 auto;
+                    color: {text_color_secondary};
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    margin: 10px 0 8px 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    text-align: center;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }}
+
+                /* Seção Vendedores: porção reservada do tamanho do conteúdo,
+                   cards centralizados na horizontal — Produtos herda o restante */
+                .secao-vendedores {{
+                    flex: 0 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 0;
+                }}
+                .vendedores-linha {{
+                    flex: 1 1 auto;
+                    min-height: 0;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-content: center;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 16px;
+                }}
+                .vendedor-card {{
+                    background: {card_bg};
+                    border-radius: 14px;
+                    padding: 10px 8px;
+                    text-align: center;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+                    border: 1px solid #44475a;
+                    width: 100px;
+                    flex-shrink: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }}
+                .vendedor-avatar {{
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 50%;
+                    margin: 0 auto 8px;
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                }}
+                .vendedor-avatar-img {{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                }}
+                .vendedor-avatar-iniciais {{
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                }}
+                .vendedor-valor {{
+                    color: {text_color_primary};
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                    letter-spacing: -0.5px;
+                }}
+
+                /* Seção Produtos: preenche o restante da tela, cards padronizados
+                   no mesmo estilo/tamanho dos cards de Vendedores */
+                .secao-produtos {{
+                    flex: 1 1 auto;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 0;
+                }}
+                .produtos-linha {{
+                    flex: 1 1 auto;
+                    min-height: 0;
+                    display: grid;
+                    grid-template-columns: repeat(5, 170px);
+                    grid-auto-rows: min-content;
+                    gap: 16px;
+                    justify-content: center;
+                    align-content: center;
+                    overflow: hidden;
+                }}
+                .produto-card {{
+                    border-radius: 14px;
+                    padding: 10px 10px;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    width: 170px;
+                    flex-shrink: 0;
+                }}
+                .produto-rank {{
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    opacity: 0.4;
+                    line-height: 1;
+                    margin-bottom: 6px;
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                }}
+                .produto-nome {{
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    margin-bottom: 8px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+                    line-height: 1.25;
+                    word-break: break-word;
+                    min-height: 2.1em;
+                }}
+                .produto-metric {{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin: 3px 0;
+                    padding: 5px 8px;
+                    background: rgba(0, 0, 0, 0.25);
+                    border-radius: 8px;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                }}
+                .produto-metric-label {{
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                }}
+                .produto-metric-value {{
+                    font-size: 0.95rem;
+                    font-weight: 900;
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+                }}
+                .sem-dados {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    color: {text_color_primary};
+                    font-size: 1.3rem;
+                }}
+
+                @media (max-width: 600px) {{
+                    .resumo-container {{ padding: 15px 15px 10px 15px; }}
+                    .resumo-title {{ font-size: 1.5rem; }}
+                    .vendedor-card {{ width: 80px; }}
+                    .produtos-linha {{ grid-template-columns: repeat(2, 130px); }}
+                    .produto-card {{ width: 130px; }}
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="resumo-container">
+                <div class="resumo-header">
+                    <div class="resumo-title">
+                        <span>📋</span>
+                        <span>Resumo - {data_titulo}</span>
+                    </div>
+
+                    <div class="vendas-card">
+                        <div class="vendas-label">💰 Vendas</div>
+                        <div class="vendas-valor">{format_currency(total_dia)}</div>
+                    </div>
+                </div>
+
+                <div class="secao-vendedores">
+                    <div class="secao-titulo">
+                        <span>👥</span>
+                        <span>Vendedores</span>
+                    </div>
+                    <div class="vendedores-linha">
+                        {vendedores_cards_html}
+                    </div>
+                </div>
+
+                <div class="secao-produtos">
+                    <div class="secao-titulo">
+                        <span>📦</span>
+                        <span>Produtos</span>
+                    </div>
+                    <div class="produtos-linha">
+                        {produtos_cards_html}
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+    """
+
+    components.html(html_content, height=panel_height, scrolling=False)

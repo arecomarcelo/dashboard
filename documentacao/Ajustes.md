@@ -221,3 +221,18 @@
 ### **14:04 - Commit 24**
 
 - Limpeza final do ajuste de nome SGD → DashBoard: pacote de container órfão `ghcr.io/arecomarcelo/sgd` excluído do GHCR (`gh api -X DELETE /user/packages/container/sgd`), confirmado via 404 na consulta seguinte
+
+### **15:35 - Commit 25**
+
+- Novo Dashboard **Resumo Dia** (`dashboard/panels.py`, `pages/01_🎬_Slideshow.py`):
+    - Título "Resumo - <dia atual>", card **Vendas** com o total vendido hoje
+    - Painel **Vendedores**: cards no estilo do Ranking de Vendedores (foto + valor), só quem vendeu hoje, centralizados numa faixa reservada com altura pelo conteúdo
+    - Painel **Produtos**: cards padronizados no mesmo tamanho dos de Vendedor (170px), só os produtos vendidos hoje, fixos em 5 por linha (até 2 linhas)
+    - Layout com altura fixa (720px, não `100vh`) para não ficar coberto pelo rodapé fixo do slideshow em janelas menores que uma TV real
+    - Reaproveitado `VENDEDORES_TABELA`, `get_vendedor_foto()` e `get_gradient()` (antes duplicados dentro de `render_ranking_vendedores`/`render_ranking_produtos`) como funções/constante de módulo
+    - Registro `Dashboard`/`Dashboard_Config` "Resumo Dia" inserido no banco (`Ativo=True`, `Ordem=6`) — sequências de ID das duas tabelas corrigidas antes (estavam dessincronizadas, apontando pra `id=1` já existente)
+    - Testado localmente (script standalone temporário, sem tocar a stack de produção) e depois no slideshow real (`localhost:8001`) com dados reais de vendas do dia
+
+### **15:35 - Commit 26**
+
+- `formata.py`: removida a limpeza de tela (`clear_screen()`) que rodava no meio do `predeploy.sh` e apagava avisos do Mypy antes do resumo final. `predeploy.sh`/`deploy_local.sh` já fazem `clear` uma única vez no início — comportamento mantido, só a limpeza extra do meio foi removida (import `os` órfão também removido)

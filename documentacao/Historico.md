@@ -4458,3 +4458,29 @@ Excluir o pacote de container `ghcr.io/arecomarcelo/sgd`, órfão desde a migra�
 - 🗑️ **EXCLUÍDO** (fora do repositório): pacote de container `ghcr.io/arecomarcelo/sgd`
 
 ---
+
+### ⏰ 15:35 - Novo Dashboard "Resumo Dia" + Correção do formata.py
+
+**📋 O que foi pedido:**
+1. Criar um novo Dashboard **Resumo Dia**, seguindo o padrão visual dos dashboards existentes (Ranking de Vendedores, Ranking de Produtos, Métricas de Vendas): título "Resumo - dia atual", card com o total vendido no dia, painel de Vendedores (foto + valor do dia) e painel de Produtos (só os vendidos hoje).
+2. Ajustes sucessivos de layout pedidos após os primeiros testes visuais: reservar uma faixa da tela para Vendedores (centralizados na horizontal) e o restante para Produtos; mostrar só vendedores com venda no dia; cards de vendedor só com foto+valor; cards de produto padronizados no tamanho dos de vendedor; produtos fixos em 5 por linha (2 linhas); corrigir sobreposição do rodapé fixo do slideshow com a 2ª linha de produtos.
+3. `bash scripts/predeploy.sh` estava tendo o aviso do Mypy apagado da tela — o `formata.py` limpava o terminal no meio da execução.
+
+**🔧 Detalhamento da Solução:**
+
+1. **`dashboard/panels.py`**: nova função `render_resumo_dia()` + `get_vendas_dia_atual()` (mesmos filtros de `get_vendas_periodo()`, mas restrito à data de hoje). Extraídos `VENDEDORES_TABELA`, `get_vendedor_foto()` e `get_gradient()` para o nível do módulo (antes duplicados dentro de `render_ranking_vendedores`/`render_ranking_produtos`), reaproveitados pelo novo painel.
+2. **Layout final**: container com altura fixa (`720px`, não `100vh` — o script de auto-resize do slideshow nem sempre encolhe o iframe a tempo, e um painel maior que o espaço disponível fica coberto pelo rodapé fixo). Seção Vendedores com altura pelo conteúdo (`flex: 0 0 auto`), cards só com foto+valor, filtrados para quem vendeu hoje, centralizados numa linha flexível. Seção Produtos ocupa o restante (`flex: 1 1 auto`), com cards de tamanho fixo (170px, padronizados com os de Vendedor) organizados num grid fixo de 5 colunas (até 2 linhas para os 10 produtos do TOP do dia).
+3. **`pages/01_🎬_Slideshow.py`**: import de `render_resumo_dia` + regra de despacho (nome do dashboard contendo "resumo" e "dia").
+4. **Banco de dados**: inserido `Dashboard` (Nome="Resumo Dia", Ativo=True) + `Dashboard_Config` (Ordem=6, Duracao=10) via Django ORM. As sequências de ID (`Dashboard_id_seq`/`Dashboard_Config_id_seq`) estavam dessincronizadas (apontavam para `id=1`, já existente — dados originais inseridos fora do ORM) e precisaram ser corrigidas com `setval` antes do insert.
+5. **Testes**: validado em scripts standalone temporários (sem tocar a stack de produção nem o `Dashboard_Config`) a cada iteração de layout, e por fim no slideshow real (`localhost:8001`, com `Ativo=True`) com dados reais de vendas do dia — confirmado sem sobreposição do rodapé.
+6. **`formata.py`**: removida a função `clear_screen()` e sua chamada em `main()` (limpava o terminal no meio do `predeploy.sh`, apagando avisos do Mypy antes do resumo final). `import os` (agora órfão) também removido. `predeploy.sh`/`deploy_local.sh` continuam limpando a tela uma única vez, no início de cada script.
+
+**⚠️ Observação:** como o banco `sga` é compartilhado com a produção (sem cópia local), o `Dashboard` "Resumo Dia" com `Ativo=True` já ficou visível na rotação ao vivo em `dashboard.oficialsport.com.br` durante os testes desta sessão, não só localmente.
+
+**📁 Arquivos Alterados:**
+- 📝 **ALTERADO**: `dashboard/panels.py`, `pages/01_🎬_Slideshow.py`
+- 📝 **ALTERADO**: `formata.py`
+- 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
+- 🗄️ **BANCO** (fora do repositório): `Dashboard` id=6 "Resumo Dia" + `Dashboard_Config` id=6 inseridos em `sga`
+
+---

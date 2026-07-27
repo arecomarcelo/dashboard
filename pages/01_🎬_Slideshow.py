@@ -27,6 +27,7 @@ from dashboard.panels import (
     render_metricas_vendas,
     render_ranking_produtos,
     render_ranking_vendedores,
+    render_resumo_dia,
     render_texto,
 )
 
@@ -443,6 +444,8 @@ elif (
     'ranking' in nome_dashboard_normalizado and 'produto' in nome_dashboard_normalizado
 ):
     render_ranking_produtos(theme=st.session_state.theme)
+elif 'resumo' in nome_dashboard_normalizado and 'dia' in nome_dashboard_normalizado:
+    render_resumo_dia(theme=st.session_state.theme)
 elif 'mensagem' in nome_dashboard_normalizado or 'texto' in nome_dashboard_normalizado:
     # Slide de mensagem - busca texto do campo Mensagem do Dashboard_Config atual
     texto_mensagem = (
