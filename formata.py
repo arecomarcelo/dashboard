@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,11 +11,6 @@ from rich.text import Text
 # Configurações
 console = Console()
 ROOT_DIR = Path(".")
-
-
-def clear_screen():
-    """Limpa o terminal"""
-    os.system("cls" if os.name == "nt" else "clear")
 
 
 def run_command(command: str, success_msg: str, error_msg: str) -> bool:
@@ -87,8 +81,6 @@ def check_dependencies():
 
 
 def main():
-    clear_screen()  # Limpa o terminal antes de iniciar
-
     console.print(
         Panel.fit(
             "[bold]🔧 Formatador de Código[/bold]",  # Adicionado símbolo de registro
