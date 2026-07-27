@@ -236,3 +236,7 @@
 ### **15:35 - Commit 26**
 
 - `formata.py`: removida a limpeza de tela (`clear_screen()`) que rodava no meio do `predeploy.sh` e apagava avisos do Mypy antes do resumo final. `predeploy.sh`/`deploy_local.sh` já fazem `clear` uma única vez no início — comportamento mantido, só a limpeza extra do meio foi removida (import `os` órfão também removido)
+
+### **15:48 - Commit 27**
+
+- `scripts/deploy_local.sh`: removida a ressalva desatualizada "(depende do DNS já ter sido provisionado)" da mensagem final de sucesso — domínio já está provisionado e validado em produção há tempo

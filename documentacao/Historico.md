@@ -4484,3 +4484,17 @@ Excluir o pacote de container `ghcr.io/arecomarcelo/sgd`, órfão desde a migra�
 - 🗄️ **BANCO** (fora do repositório): `Dashboard` id=6 "Resumo Dia" + `Dashboard_Config` id=6 inseridos em `sga`
 
 ---
+
+### ⏰ 15:48 - Ajuste de Mensagem no Deploy
+
+**📋 O que foi pedido:**
+Remover a ressalva "(depende do DNS já ter sido provisionado)" da mensagem final de sucesso do `scripts/deploy_local.sh` — o usuário notou o texto desatualizado ao rodar o deploy real.
+
+**🔧 Detalhamento da Solução:**
+O domínio `dashboard.oficialsport.com.br` já está provisionado e validado em produção há tempo (confirmado nesta mesma sessão via `curl` e navegador), então a ressalva não fazia mais sentido. Removida a parte entre parênteses, mantendo só `🌐 App: ${APP_URL}`.
+
+**📁 Arquivos Alterados:**
+- 📝 **ALTERADO**: `scripts/deploy_local.sh`
+- 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
+
+---
