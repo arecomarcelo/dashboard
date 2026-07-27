@@ -217,3 +217,7 @@
     - VPS: `git remote` do clone em `/home/deploy/apps/` atualizado para `arecomarcelo/dashboard`, `git pull` trazendo o `stack.yml` já ajustado
     - `docker stack rm sgd` → `mv /home/deploy/apps/sgd /home/deploy/apps/dashboard` → `docker stack deploy -c stack.yml dashboard --with-registry-auth`
     - Validado: `dashboard_web` 1/1 saudável, `https://dashboard.oficialsport.com.br` responde 200 com dados reais (Ranking de Vendedores validado visualmente no navegador)
+
+### **14:04 - Commit 24**
+
+- Limpeza final do ajuste de nome SGD → DashBoard: pacote de container órfão `ghcr.io/arecomarcelo/sgd` excluído do GHCR (`gh api -X DELETE /user/packages/container/sgd`), confirmado via 404 na consulta seguinte

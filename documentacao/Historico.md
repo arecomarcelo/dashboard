@@ -4444,3 +4444,17 @@ Completar o ajuste de nome iniciado na interação anterior, efetivando a troca 
 - 🌐 **ALTERADO** (fora do repositório, na VPS): `git remote` do clone de produção; stack Docker Swarm `sgd` → `dashboard`; pasta `/home/deploy/apps/sgd` → `/home/deploy/apps/dashboard`
 
 ---
+
+### ⏰ 14:04 - Limpeza: Pacote Órfão no GHCR
+
+**📋 O que foi pedido:**
+Excluir o pacote de container `ghcr.io/arecomarcelo/sgd`, órfão desde a migração da produção para a imagem `ghcr.io/arecomarcelo/dashboard`.
+
+**🔧 Detalhamento da Solução:**
+`gh api /user/packages/container/sgd` confirmou o pacote (privado, 2 versões, criado em 23/07/2026, sem repositório associado desde o rename). Excluído via `gh api -X DELETE /user/packages/container/sgd`. Confirmado via nova consulta ao mesmo endpoint, que retornou `404 Package not found`.
+
+**📁 Arquivos Alterados:**
+- 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
+- 🗑️ **EXCLUÍDO** (fora do repositório): pacote de container `ghcr.io/arecomarcelo/sgd`
+
+---
