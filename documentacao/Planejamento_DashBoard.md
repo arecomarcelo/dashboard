@@ -1,4 +1,4 @@
-# 🎯 Planejamento - Sistema SGD (Sistema de Gestão de Dashboard)
+# 🎯 Planejamento - Sistema DashBoard (Sistema de Gestão de Dashboard)
 
 ## 📌 Objetivo do Projeto
 
@@ -17,7 +17,7 @@ Criar um sistema Django que controle a exibição de Dashboards em formato de sl
 
 ### Dashboards a Serem Importados:
 
-Os seguintes painéis do relatório de vendas do SGR serão integrados ao SGD:
+Os seguintes painéis do relatório de vendas do SGR serão integrados ao DashBoard:
 
 - Meta Mês
 - Métricas de Venda

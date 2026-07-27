@@ -1,4 +1,4 @@
-# 📋 Histórico de Interações - Projeto SGD
+# 📋 Histórico de Interações - Projeto DashBoard
 
 ## 📅 17/04/2026
 
@@ -135,15 +135,15 @@ Ajustar o texto "Mês de 2025= R$ 2.373.845,14" com a mesma formatação (Fonte 
 ### ⏰ 15:30 - Correção de Cálculo: Filtro de situações no período anterior removido
 
 #### 🎯 O que foi pedido:
-Valores dos vendedores Cássio, César, Nilton e Carlos ainda não batem entre SGD e SGR.
+Valores dos vendedores Cássio, César, Nilton e Carlos ainda não batem entre DashBoard e SGR.
 Usuário confirmou: **"sempre mês atual de 01 a dia atual"** — período fixo, não filtrado por usuário.
 
 #### 🔍 Causa Raiz:
-A função `calcular_vendas_periodo_anterior` no SGD filtrava situações com:
+A função `calcular_vendas_periodo_anterior` no DashBoard filtrava situações com:
 ```sql
 AND "SituacaoNome" NOT IN ('Cancelada (sem financeiro)', 'Não considerar - Excluidos')
 ```
-Porém, o SGR **não aplica nenhum filtro de situação** ao buscar as vendas do ano anterior (`get_vendas_filtradas` chamada sem `situacoes_excluir`). Isso gerava totais menores no SGD, causando a divergência.
+Porém, o SGR **não aplica nenhum filtro de situação** ao buscar as vendas do ano anterior (`get_vendas_filtradas` chamada sem `situacoes_excluir`). Isso gerava totais menores no DashBoard, causando a divergência.
 
 #### 🔧 Detalhamento da Solução:
 - ❌ Removida a cláusula `NOT IN` da query SQL de `calcular_vendas_periodo_anterior`
@@ -158,7 +158,7 @@ Porém, o SGR **não aplica nenhum filtro de situação** ao buscar as vendas do
 ### ⏰ 14:45 - Correção de Cálculo: Vendas período anterior com valores incorretos
 
 #### 🎯 O que foi pedido:
-Comparando `sgr.png` (correto) com `sgd.png` (incorreto), os valores de "Mês de 2025" e "% meta do mês batida" estavam divergentes — César mostrava R$ 32.048 (SGD) vs valor correto ~R$ 750K+ (SGR), resultando em 3188% de meta.
+Comparando `sgr.png` (correto) com `sgd.png` (incorreto), os valores de "Mês de 2025" e "% meta do mês batida" estavam divergentes — César mostrava R$ 32.048 (DashBoard) vs valor correto ~R$ 750K+ (SGR), resultando em 3188% de meta.
 
 #### 🔍 Causa Raiz:
 A função `calcular_vendas_periodo_anterior` usava **comparação manual de strings** para filtrar datas:
@@ -193,10 +193,10 @@ Texto "Mês de 2025 R$ 2.247.485,06" deve aparecer em uma única linha no format
 ### ⏰ 14:15 - Ajuste Cards Ranking: Mês de {ano} e % meta do mês batida
 
 #### 🎯 O que foi pedido:
-Os cards do Ranking de Vendedores no painel SGD estavam faltando as informações "Mês de {ano} (dinâmico)" e "% meta do mês batida". O layout deveria ser semelhante à imagem de referência (`imagens/card.png`).
+Os cards do Ranking de Vendedores no painel DashBoard estavam faltando as informações "Mês de {ano} (dinâmico)" e "% meta do mês batida". O layout deveria ser semelhante à imagem de referência (`imagens/card.png`).
 
 #### 🔍 Causa Raiz:
-O `panels.py` do SGD usava a lógica antiga com **gauges SVG** (dois círculos animados), sem os campos de período anterior e % meta. A lógica atual do SGR já havia evoluído para exibir essas informações como texto.
+O `panels.py` do DashBoard usava a lógica antiga com **gauges SVG** (dois círculos animados), sem os campos de período anterior e % meta. A lógica atual do SGR já havia evoluído para exibir essas informações como texto.
 
 #### 🔧 Detalhamento da Solução:
 1. **Removida** função `calcular_vendas_mes_atual_para_gauge` (lógica antiga de gauge)
@@ -344,7 +344,7 @@ Implementar uma grid no módulo ⚙️ Gerenciar Dashboards, abaixo do painel �
 #### 🔧 Detalhamento da Solução:
 
 **Análise da Documentação Inicial:**
-- ✅ Identificado objetivo: Sistema de Gestão de Dashboard (SGD)
+- ✅ Identificado objetivo: Sistema de Gestão de Dashboard (DashBoard)
 - ✅ Integração com SGS (Sistema de Gestão de Relatórios) em `/media/areco/Backup/Oficial/Projetos/sgr`
 - ✅ Dashboards a importar: Meta Mês, Métricas de Venda, Ranking Vendedores, Ranking Produtos
 - ✅ Funcionalidade: Exibição em formato de slides com transição automática
@@ -623,7 +623,7 @@ Corrigir a documentação para especificar que o SGS é uma aplicação **Stream
 ### ⏰ 12:47 - Migração Completa para Streamlit + Django ORM
 
 #### 📝 O que foi pedido:
-Migrar a aplicação SGD para **Streamlit** mantendo o **Django ORM** para gerenciar os modelos PostgreSQL
+Migrar a aplicação DashBoard para **Streamlit** mantendo o **Django ORM** para gerenciar os modelos PostgreSQL
 
 #### 🔧 Detalhamento da Solução:
 
@@ -3409,7 +3409,7 @@ Ativar o slideshow automático para realizar teste geral de funcionamento dos 4 
   - Removidos comentários temporários
 
 #### 🎯 Status:
-✅ **Fase 4 do Planejamento SGD concluída com sucesso!**
+✅ **Fase 4 do Planejamento DashBoard concluída com sucesso!**
 - Todos os 4 dashboards implementados e testados
 - Slideshow automático funcional
 - Layout responsivo e tema Dracula aplicado
@@ -3495,7 +3495,7 @@ Para resolver, você precisa **conectar no servidor de produção** e executar o
 # 1. Conectar no servidor de produção
 ssh usuario@servidor-producao
 
-# 2. Navegar até o diretório do projeto SGD
+# 2. Navegar até o diretório do projeto DashBoard
 cd /caminho/do/projeto/sgd
 
 # 3. Parar o Streamlit se estiver rodando
@@ -4272,15 +4272,15 @@ As colunas `Data` (Vendas) e `PrazoEntrega` (Vendas) foram alteradas no banco de
 ### ⏰ 14:56 - Preparação da Dockerização + Deploy VPS (padrão SGR)
 
 **📋 O que foi pedido:**
-Aplicar no SGD o mesmo padrão de infraestrutura já validado no SGR: Docker + Infraestrutura VPS produção, ajuste de sub-domínio (WebSocket + OpenLiteSpeed) e mitigação da exposição da porta 5432. Além disso, apenas memorizar (sem implementar) a intenção futura de extrair o SGD para uma app Django dedicada.
+Aplicar no DashBoard o mesmo padrão de infraestrutura já validado no SGR: Docker + Infraestrutura VPS produção, ajuste de sub-domínio (WebSocket + OpenLiteSpeed) e mitigação da exposição da porta 5432. Além disso, apenas memorizar (sem implementar) a intenção futura de extrair o DashBoard para uma app Django dedicada.
 
 **🔧 Detalhamento da Solução:**
 Confirmado com o usuário: mesma VPS do SGR (`195.200.1.244`, Docker Swarm + Traefik), subdomínio `dashboard.oficialsport.com.br`, e preparação de arquivos localmente **antes** de qualquer execução na VPS (nada foi executado remotamente nesta sessão).
 
 1. **Docker + Infraestrutura VPS** — criados `Dockerfile` (porta `8113`, próxima livre após o `8112` do SGR), `entrypoint.sh` (passthrough simples, sem migrate — todos os modelos são `managed=False`), `stack.yml` (Swarm, `extra_hosts: host-postgres:host-gateway`, `replicas: 1` por causa do uso pesado de `st.session_state` no slideshow), `.dockerignore` (não existia — exclui `venv/` de 570MB) e `scripts/predeploy.sh`/`scripts/deploy_local.sh` (adaptados do SGR, ajustando branch `master` em vez de `main`, `VPS_APP_DIR=/home/deploy/apps/sgd`, `APP_URL=https://dashboard.oficialsport.com.br`).
 2. **Sub-domínio (WebSocket + OpenLiteSpeed)** — criado `documentacao/deploy/vhost_dashboard_oficialsport.conf`, um template/referência com os 3 ajustes que resolveram o mesmo problema no SGR: `enableSpdy 0` (desliga HTTP/2 no vhost), `enableWebSocket 1` (context proxy) e bloco `websocket /_stcore/stream` dedicado (causa raiz real: proxy genérico devolve `Connection: Keep-Alive` em vez de `Upgrade`).
-3. **Segurança — porta 5432** — o `stack.yml` já conecta via `host-postgres` (rede interna Docker), eliminando o hop de internet pública para o SGD, mas o fechamento efetivo da porta no firewall do host segue pendente (escopo de toda a VPS, ação que cabe ao usuário aplicar diretamente).
-4. **Plano futuro de extração** — apenas memorizado (sem planejamento formal, sem código): intenção de replicar no SGD o movimento já feito no SGR (extração para app Django dedicada, ex. `dashboard`).
+3. **Segurança — porta 5432** — o `stack.yml` já conecta via `host-postgres` (rede interna Docker), eliminando o hop de internet pública para o DashBoard, mas o fechamento efetivo da porta no firewall do host segue pendente (escopo de toda a VPS, ação que cabe ao usuário aplicar diretamente).
+4. **Plano futuro de extração** — apenas memorizado (sem planejamento formal, sem código): intenção de replicar no DashBoard o movimento já feito no SGR (extração para app Django dedicada, ex. `dashboard`).
 
 Todas as memórias de projeto foram registradas em `~/.claude/projects/-home-areco-Projetos-Oficial-Antigos-sgd/memory/` (índice `MEMORY.md` + 4 arquivos).
 
@@ -4302,7 +4302,7 @@ Todas as memórias de projeto foram registradas em `~/.claude/projects/-home-are
 ### ⏰ 15:25 - Execução Real do Deploy na VPS (Docker + Vhost + SSL)
 
 **📋 O que foi pedido:**
-Avançar da preparação de arquivos para a execução real: subir o SGD dockerizado em produção na VPS `195.200.1.244`, com o subdomínio `dashboard.oficialsport.com.br` funcionando de fato.
+Avançar da preparação de arquivos para a execução real: subir o DashBoard dockerizado em produção na VPS `195.200.1.244`, com o subdomínio `dashboard.oficialsport.com.br` funcionando de fato.
 
 **🔧 Detalhamento da Solução:**
 
@@ -4321,7 +4321,7 @@ Avançar da preparação de arquivos para a execução real: subir o SGD dockeri
    - Validação visual real no navegador (Chrome via Claude in Chrome): `https://dashboard.oficialsport.com.br` carregou, redirecionou automaticamente para `/Slideshow` (confirma WebSocket ativo, já que esse redirect é feito pelo backend Streamlit) e renderizou o painel "Ranking de Vendedores" com dados reais do banco `sga` e fotos dos vendedores. Sem erros no console do navegador.
 
 **⚠️ Observações importantes:**
-- O SGD legado (Streamlit Cloud + eventual "servidor de produção" via SSH/git pull mencionado em entradas anteriores deste histórico) **continua ativo em paralelo** — nenhuma dessas instâncias foi desligada nesta sessão. Decisão sobre desativá-las fica pendente de confirmação do usuário numa próxima sessão.
+- O DashBoard legado (Streamlit Cloud + eventual "servidor de produção" via SSH/git pull mencionado em entradas anteriores deste histórico) **continua ativo em paralelo** — nenhuma dessas instâncias foi desligada nesta sessão. Decisão sobre desativá-las fica pendente de confirmação do usuário numa próxima sessão.
 - A porta 5432 do Postgres nativo continua exposta publicamente (mitigação de segurança aplicada só para esta nova instância Docker, que conecta via rede interna `host-postgres`) — fechamento do firewall segue como pendência de escopo de toda a VPS.
 - Aviso do Docker Swarm durante o deploy: `ignoring IP-address (127.0.0.1:8113:8113/tcp) service will listen on '0.0.0.0'` — limitação conhecida do modo Swarm (roteamento mesh sempre expõe em todas as interfaces, ignorando o binding `127.0.0.1` do `stack.yml`); mesmo comportamento já presente no SGR, não é uma regressão introduzida aqui.
 
@@ -4339,12 +4339,12 @@ Avançar da preparação de arquivos para a execução real: subir o SGD dockeri
 ### ⏰ 15:35 - Teste Local da Imagem Docker + Geração de Alias
 
 **📋 O que foi pedido:**
-Testar localmente a imagem Docker gerada, e gerar os alias de `rodar`/`predeploy`/`deploy` para o SGD seguindo o padrão já usado nas demais apps do ambiente Oficial (`administracao`, `financeiro`, `estoque`, `rpa`, `monitor-rpa`, `comex`).
+Testar localmente a imagem Docker gerada, e gerar os alias de `rodar`/`predeploy`/`deploy` para o DashBoard seguindo o padrão já usado nas demais apps do ambiente Oficial (`administracao`, `financeiro`, `estoque`, `rpa`, `monitor-rpa`, `comex`).
 
 **🔧 Detalhamento da Solução:**
 
 1. **Teste local da imagem Docker**: `docker build -t sgd-test .` + `docker run -d --rm -p 8113:8113 --env-file .env sgd-test` — sem depender de Swarm/Traefik (o `stack.yml` é específico para produção). Healthcheck (`/_stcore/health`) respondeu `200`, e validação visual no navegador confirmou o slideshow renderizando dados reais do banco `sga`, idêntico à produção. Container e imagem de teste removidos ao final.
-2. **Alias gerados**: diferente das apps Multi-Aplicação (`administracao`/`financeiro`/`estoque`), que sobem Docker Compose local com banco/Redis espelhados, o SGD é sistema legado (Streamlit + Django ORM, sem banco local, sem Celery/Redis, modelos `managed=False`) — por isso `scripts/rodar-aplicacao.sh` foi adaptado para apenas validar `venv`/`.env` e subir `streamlit run app.py --server.port 8001` direto (porta de desenvolvimento local, diferente da porta `8113` usada dentro do container Docker).
+2. **Alias gerados**: diferente das apps Multi-Aplicação (`administracao`/`financeiro`/`estoque`), que sobem Docker Compose local com banco/Redis espelhados, o DashBoard é sistema legado (Streamlit + Django ORM, sem banco local, sem Celery/Redis, modelos `managed=False`) — por isso `scripts/rodar-aplicacao.sh` foi adaptado para apenas validar `venv`/`.env` e subir `streamlit run app.py --server.port 8001` direto (porta de desenvolvimento local, diferente da porta `8113` usada dentro do container Docker).
    - `rodar-sgd` → `scripts/rodar-aplicacao.sh` (novo)
    - `predeploy-sgd` → `scripts/predeploy.sh` (já existia, criado na sessão anterior)
    - `deploy-sgd` → `scripts/deploy_local.sh` (já existia, criado na sessão anterior)
@@ -4392,5 +4392,35 @@ Alterado apenas o nome do alias (mantendo os caminhos dos scripts, que continuam
 - 📝 **ALTERADO**: `pages/01_🎬_Slideshow.py` - correção do bug de duplicação do primeiro dashboard
 - 📝 **ALTERADO**: `formata.py` - usa `sys.executable` em vez de `python` bare nos comandos de black/isort/mypy
 - 📝 **ATUALIZADO**: `documentacao/Historico.md` - Registro desta interação
+
+---
+
+## 📅 27/07/2026
+
+### ⏰ 13:45 - Ajuste de Nome: SGD → DashBoard (skill `ajustar-nome-app`)
+
+**📋 O que foi pedido:**
+Executar a skill `ajustar-nome-app` para renomear o projeto de "SGD" para "DashBoard", movendo a pasta local para `/media/areco/Backup/Oficial/Projetos/nova-estrutura/dashboard`, com escopo Completo (pasta + repositório GitHub + produção).
+
+**🔧 Detalhamento da Solução:**
+
+1. **Levantamento (Passo 1):** confirmado que a infraestrutura de produção deste app é atípica para o ambiente Oficial — não usa NPM (padrão das demais apps `multi-*`), e sim Docker Swarm (`stack.yml`, `docker stack deploy`) atrás de um vhost OpenLiteSpeed real já chamado `dashboard` (domínio `dashboard.oficialsport.com.br`, que não precisou mudar). Confirmado também que o app não pertence à esteira de extração SGA (não registrado em `apps.conf`/`Score Implantacao.md`, não referenciado no `prometheus.yml` do `multi-aplicacao`) e não tem schema de banco próprio (conecta direto no `sga`, schema `public`).
+2. **Referências internas:** "SGD" → "DashBoard" em código (`app.py`, `dashboard/panels.py`, template do slideshow, JS), comentários (`entrypoint.sh`, `Dockerfile` — variável `SGD_DOCKER_DEPLOY` → `DASHBOARD_DOCKER_DEPLOY`, não utilizada em nenhum outro lugar), scripts (`predeploy.sh`, `deploy_local.sh`, `rodar-aplicacao.sh`) e documentação (`CLAUDE.md`, `Ajustes.md`, `Passo_a_Passo_Correcao_Filtros_Vendas.md`, `vhost_dashboard_oficialsport.conf`). `Historico.md` teve só as menções de "SGD" como nome do projeto atualizadas — comandos/paths literais de sessões passadas (ex.: `docker build -t sgd-test`, `rodar-sgd`) foram preservados como registro histórico do que de fato foi executado na época.
+3. **`documentacao/Planejamento_SGD.md`** renomeado para `documentacao/Planejamento_DashBoard.md` (referências em `CLAUDE.md`/`Problemas_Fase4_Botoes.md` atualizadas).
+4. **`stack.yml`:** rótulos Traefik `routers.sgd`/`services.sgd` → `routers.dashboard`/`services.dashboard`, imagem `ghcr.io/arecomarcelo/sgd:latest` → `ghcr.io/arecomarcelo/dashboard:latest`.
+5. **Repositório GitHub:** `gh repo rename dashboard --repo arecomarcelo/sgd` + `git remote set-url origin` local atualizado para `git@github.com:arecomarcelo/dashboard.git`.
+6. **Pasta local:** `mv` de `/media/areco/Backup/Oficial/Projetos/sgd` para `/media/areco/Backup/Oficial/Projetos/nova-estrutura/dashboard` — venv recriada do zero (paths absolutos quebrados pelo `mv`), `manage.py check` OK, `manage.py test` sem testes definidos (esperado). Stub vazio remanescente no caminho antigo removido e confirmado via `ls`. Memória Claude Code migrada manualmente para o novo path-hash (`~/.claude/projects/-media-areco-Backup-Oficial-Projetos-nova-estrutura-dashboard/memory/`, projeto sem hook de sync automático).
+7. **Streamlit Community Cloud:** identificado, fora do levantamento inicial, um segundo deploy paralelo em `share.streamlit.io` (app "sgd", subdomínio `oficialsport-slideshow`, sem opção de editar o repositório vinculado na UI — só delete/recriar). Confirmado com o usuário que o mesmo tratamento já dado ao SGR (relatórios) — remoção completa do Streamlit Cloud, já 100% migrado para produção real — se aplica aqui: app excluído via navegador (Chrome automatizado), sem recriação.
+8. **Banco de dados:** sem alteração — schema `public` do banco `sga`, sem `DB_SCHEMA` dedicado.
+
+**📁 Arquivos Alterados/Criados:**
+- 📝 **ALTERADO**: `app.py`, `dashboard/panels.py`, `dashboard/templates/dashboard/slideshow.html`, `pages/01_🎬_Slideshow.py`, `diagnostico_fotos.sh`, `entrypoint.sh`, `Dockerfile`, `stack.yml`
+- 📝 **ALTERADO**: `scripts/predeploy.sh`, `scripts/deploy_local.sh`, `scripts/rodar-aplicacao.sh`
+- 📝 **ALTERADO**: `documentacao/CLAUDE.md`, `documentacao/Ajustes.md`, `documentacao/Historico.md`, `documentacao/Passo_a_Passo_Correcao_Filtros_Vendas.md`, `documentacao/Problemas_Fase4_Botoes.md`, `documentacao/deploy/vhost_dashboard_oficialsport.conf`
+- 🔄 **RENOMEADO**: `documentacao/Planejamento_SGD.md` → `documentacao/Planejamento_DashBoard.md`
+- 🌐 **RENOMEADO** (fora do repositório): repositório GitHub `arecomarcelo/sgd` → `arecomarcelo/dashboard`
+- 📁 **MOVIDO** (fora do repositório): pasta local `Projetos/sgd` → `Projetos/nova-estrutura/dashboard`
+- ❌ **EXCLUÍDO** (fora do repositório): app "sgd" no Streamlit Community Cloud
+- ⏳ **PENDENTE** (commit de follow-up): troca da stack Docker Swarm de produção na VPS (`sgd` → `dashboard`)
 
 ---

@@ -7,7 +7,7 @@
 
 ### **15:25 - Commit Inicial**
 
-- Criação da App **SGD** (**Sistema de Gestão de Dashboard**)
+- Criação da App **DashBoard** (**Sistema de Gestão de Dashboard**)
 
 ### **15:39 - Commit 01**
 
@@ -194,3 +194,18 @@
 ### **11:32 - Commit 21**
 
 - Formatação **Black/Isort** de `dashboard/models.py` (sem alteração de lógica)
+
+**27/07/2026**
+
+### **13:45 - Commit 22**
+
+- Ajuste de nome **SGD → DashBoard** (skill `ajustar-nome-app`, escopo Completo):
+    - Referências internas (código, comentários, docstrings, títulos, templates) e documentação (`documentacao/*.md`) atualizadas de "SGD" para "DashBoard" — histórico (`Historico.md`) preservado onde descreve fatos/comandos literais de sessões passadas
+    - `documentacao/Planejamento_SGD.md` renomeado para `documentacao/Planejamento_DashBoard.md`
+    - `stack.yml`: rótulos Traefik (`routers.dashboard`/`services.dashboard`) e imagem `ghcr.io/arecomarcelo/dashboard:latest`
+    - `scripts/deploy_local.sh`: `VPS_APP_DIR`, `IMAGE` e comandos de deploy/logs atualizados para `dashboard`
+    - Repositório GitHub renomeado: `arecomarcelo/sgd` → `arecomarcelo/dashboard` (remote `origin` local atualizado)
+    - Pasta local movida: `/media/areco/Backup/Oficial/Projetos/sgd` → `/media/areco/Backup/Oficial/Projetos/nova-estrutura/dashboard` (venv recriada do zero; `manage.py check` OK)
+    - Memória Claude Code migrada para o novo path-hash (`~/.claude/projects/-media-areco-Backup-Oficial-Projetos-nova-estrutura-dashboard/memory/`)
+    - Banco de dados: sem alteração (conecta direto no banco legado `sga`, schema `public`, sem `DB_SCHEMA` dedicado)
+    - Pendente (commit de follow-up): efetivar a troca da stack Docker Swarm de produção (`sgd` → `dashboard`) na VPS — domínio/vhost OpenLiteSpeed (`dashboard.oficialsport.com.br`) não mudam, já nasceram com o nome novo

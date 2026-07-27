@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script de Deploy — SGD (Multi-Aplicação Oficial)
+# Script de Deploy — DashBoard (Multi-Aplicação Oficial)
 #
 # Descrição: Push para GitHub + build/push da imagem + deploy Docker Swarm
 #            na VPS Hostinger.
@@ -16,9 +16,9 @@
 #
 # Pré-requisitos (uma vez):
 #   - docker login ghcr.io -u arecomarcelo
-#   - /home/deploy/apps/sgd já clonado na VPS (git clone git@github.com:
-#     arecomarcelo/sgd.git /home/deploy/apps/sgd)
-#   - .env real em /home/deploy/apps/sgd/.env (DB_HOST=host-postgres,
+#   - /home/deploy/apps/dashboard já clonado na VPS (git clone git@github.com:
+#     arecomarcelo/dashboard.git /home/deploy/apps/dashboard)
+#   - .env real em /home/deploy/apps/dashboard/.env (DB_HOST=host-postgres,
 #     DB_NAME=sga, DB_USER/DB_PASSWORD reais, SECRET_KEY)
 #   - DNS dashboard.oficialsport.com.br → 195.200.1.244 (Traefik só roteia
 #     depois disso propagar; até lá dá pra validar via porta publicada/curl
@@ -39,7 +39,7 @@ BOLD='\033[1m'
 
 VPS_HOST="195.200.1.244"
 VPS_USER="root"
-VPS_APP_DIR="/home/deploy/apps/sgd"
+VPS_APP_DIR="/home/deploy/apps/dashboard"
 APP_URL="https://dashboard.oficialsport.com.br"
 
 clear
@@ -47,7 +47,7 @@ echo -e "${BOLD}${CYAN}"
 cat << "EOF"
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║          SGD — Multi-Aplicação Oficial (Oficial Sport)       ║
+║       DashBoard — Multi-Aplicação Oficial (Oficial Sport)    ║
 ║                                                               ║
 ║                DEPLOY → VPS HOSTINGER                        ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -87,7 +87,7 @@ echo ""
 # ─── 3. Build + push da imagem para o GHCR ───────────────────────────────────
 # Pré-requisito (uma vez por máquina): docker login ghcr.io -u arecomarcelo
 echo -e "${CYAN}▶ [2/4] Build e push da imagem para o GHCR...${NC}"
-IMAGE="ghcr.io/arecomarcelo/sgd:latest"
+IMAGE="ghcr.io/arecomarcelo/dashboard:latest"
 if docker build -t "$IMAGE" . && docker push "$IMAGE"; then
     echo -e "${GREEN}✅ Imagem publicada: ${IMAGE}${NC}"
 else
@@ -103,21 +103,21 @@ ssh -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "
     echo '  → git pull...' &&
     git pull origin master &&
     echo '  → docker stack deploy...' &&
-    docker stack deploy -c stack.yml sgd --with-registry-auth
+    docker stack deploy -c stack.yml dashboard --with-registry-auth
 "
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Deploy na VPS concluído!${NC}"
 else
     echo -e "${RED}❌ Erro durante deploy na VPS. Verifique os logs:${NC}"
-    echo -e "${YELLOW}   ssh ${VPS_USER}@${VPS_HOST} 'docker service logs sgd_web --tail 30'${NC}"
+    echo -e "${YELLOW}   ssh ${VPS_USER}@${VPS_HOST} 'docker service logs dashboard_web --tail 30'${NC}"
     exit 1
 fi
 echo ""
 
 # ─── 5. Verificar status ─────────────────────────────────────────────────────
 echo -e "${CYAN}▶ [4/4] Status das réplicas na VPS...${NC}"
-ssh -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "docker service ls | grep sgd"
+ssh -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "docker service ls | grep dashboard"
 echo ""
 
 echo -e "${GREEN}${BOLD}✅ DEPLOY CONCLUÍDO!${NC}"

@@ -213,7 +213,7 @@ document.addEventListener('keydown', (e) => {
   - Linha 347-388: Código dos botões
 
 - `/documentacao/Historico.md` - Histórico completo
-- `/documentacao/Planejamento_SGD.md` - Roadmap
+- `/documentacao/Planejamento_DashBoard.md` - Roadmap
 
 ---
 

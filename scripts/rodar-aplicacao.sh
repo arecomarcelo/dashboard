@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sobe o ambiente local do SGD (Streamlit + Django ORM) para testes
+# Sobe o ambiente local do DashBoard (Streamlit + Django ORM) para testes
 
 set -euo pipefail
 
@@ -25,7 +25,7 @@ erro() { echo -e "${VERMELHO}  ✘ ${1}${RESET}"; exit 1; }
 
 echo ""
 echo -e "${CIANO}╔══════════════════════════════════════════╗${RESET}"
-echo -e "${CIANO}║   SGD — Iniciar Ambiente Local            ║${RESET}"
+echo -e "${CIANO}║ DashBoard — Iniciar Ambiente Local        ║${RESET}"
 echo -e "${CIANO}╚══════════════════════════════════════════╝${RESET}"
 echo ""
 
@@ -43,9 +43,10 @@ info "Verificando .env..."
 ok ".env presente"
 
 # Sem Docker/Redis/migrations aqui: diferente das apps Multi-Aplicação (admini
-# stracao/financeiro/estoque), o SGD é sistema legado (Streamlit + Django ORM)
-# que conecta direto no banco `sga` já existente — sem banco local espelhado,
-# sem Celery/Redis, e todos os modelos são managed=False (sem migrations).
+# stracao/financeiro/estoque), o DashBoard é sistema legado (Streamlit + Django
+# ORM) que conecta direto no banco `sga` já existente — sem banco local
+# espelhado, sem Celery/Redis, e todos os modelos são managed=False (sem
+# migrations).
 
 # ─── 3. Subir Streamlit ────────────────────────────────────────────────────────
 echo ""

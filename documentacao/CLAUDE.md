@@ -2,13 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Projeto SGD (Sistema de Gestão de Dashboard)
+## Projeto DashBoard (Sistema de Gestão de Dashboard)
 
 Este é um projeto Django 5.2.2 que controla a exibição de Dashboards em formato de slides com transição automática.
 
 ### Integração com SGS (Sistema de Gestão de Relatórios)
 
-O SGD importa e exibe painéis do **SGS - Sistema de Gestão de Relatórios**, uma aplicação Streamlit localizada em:
+O DashBoard importa e exibe painéis do **SGS - Sistema de Gestão de Relatórios**, uma aplicação Streamlit localizada em:
 - **Localização**: `/media/areco/Backup/Oficial/Projetos/sgr`
 - **Tipo**: Aplicação Streamlit (Python)
 - **Comando de execução**: `streamlit run app.py`
@@ -35,7 +35,7 @@ O SGD importa e exibe painéis do **SGS - Sistema de Gestão de Relatórios**, u
 ### Organização de Arquivos
 
 - Todos os documentos criados devem ser armazenados na pasta `documentacao/`
-- Toda pasta ou arquivo criado deve estar dentro do domínio da aplicação (`/media/areco/Backup/Oficial/Projetos/sgd/`)
+- Toda pasta ou arquivo criado deve estar dentro do domínio da aplicação (`/media/areco/Backup/Oficial/Projetos/nova-estrutura/dashboard/`)
 - Jamais criar arquivos fora do domínio do projeto
 
 ## Estrutura do Projeto
@@ -58,7 +58,7 @@ O SGD importa e exibe painéis do **SGS - Sistema de Gestão de Relatórios**, u
 - **documentacao/**: Documentação do projeto
   - `CLAUDE.md`: Este arquivo
   - `Historico.md`: Histórico de interações
-  - `Planejamento_SGD.md`: Roadmap do projeto
+  - `Planejamento_DashBoard.md`: Roadmap do projeto
 - **venv/**: Ambiente virtual Python
 - **app.py**: Aplicação principal Streamlit (auto-redirect para slideshow)
 - **django_setup.py**: Configuração standalone do Django para Streamlit

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Script de Pré-Deploy — SGD (Multi-Aplicação Oficial)
+# Script de Pré-Deploy — DashBoard (Multi-Aplicação Oficial)
 #
 # Descrição: Valida o sistema antes do deploy Docker na VPS Hostinger.
 # Uso: bash scripts/predeploy.sh
@@ -13,10 +13,10 @@
 #   4. git commit
 #   5. bash scripts/deploy_local.sh
 #
-# Diferente de administracao/comex/estoque/financeiro: o SGD é sistema legado
-# (mesmo padrão do SGR) — sem migrações Django novas (modelos já existem no
-# banco, todos managed=False), sem % Desenvolvido/Score de Implantação, sem
-# Celery/Redis.
+# Diferente de administracao/comex/estoque/financeiro: o DashBoard é sistema
+# legado (mesmo padrão do SGR) — sem migrações Django novas (modelos já
+# existem no banco, todos managed=False), sem % Desenvolvido/Score de
+# Implantação, sem Celery/Redis.
 ################################################################################
 
 RED='\033[0;31m'
@@ -48,7 +48,7 @@ echo -e "${BOLD}${CYAN}"
 cat << "EOF"
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║          SGD — Multi-Aplicação Oficial (Oficial Sport)       ║
+║       DashBoard — Multi-Aplicação Oficial (Oficial Sport)    ║
 ║                                                               ║
 ║           SCRIPT DE PRÉ-DEPLOY — VALIDAÇÃO                   ║
 ╚═══════════════════════════════════════════════════════════════╝

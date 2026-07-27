@@ -1,22 +1,22 @@
-# Stack Docker Swarm — SGD (Multi-Aplicação Oficial)
+# Stack Docker Swarm — DashBoard (Multi-Aplicação Oficial)
 #
-# Mesmo padrão do SGR (ver documentacao/): o SGD fala diretamente com o
+# Mesmo padrão do SGR (ver documentacao/): o DashBoard fala diretamente com o
 # Postgres NATIVO do host (banco "sga", live/transacional), não com o
 # container sga_db. Por isso não entra na rede sga_db_net — usa extra_hosts
 # (host-gateway) para alcançar o Postgres do host a partir do container,
 # sem sair para a internet pública (porta 5432 hoje exposta e sob varredura
 # de bots — ver memória de segurança).
 #
-# Réplica única (replicas: 1): o SGD guarda estado de sessão em memória do
-# processo (st.session_state, ver pages/01_🎬_Slideshow.py) — múltiplas
+# Réplica única (replicas: 1): o DashBoard guarda estado de sessão em memória
+# do processo (st.session_state, ver pages/01_🎬_Slideshow.py) — múltiplas
 # réplicas quebrariam o slideshow/tema/pausa.
 #
 # Imagem publicada no GHCR via scripts/deploy_local.sh (build+push manual,
-# sem CI por enquanto). Deploy na VPS: docker stack deploy -c stack.yml sgd
+# sem CI por enquanto). Deploy na VPS: docker stack deploy -c stack.yml dashboard
 
 services:
   web:
-    image: ghcr.io/arecomarcelo/sgd:latest
+    image: ghcr.io/arecomarcelo/dashboard:latest
     env_file: .env
     environment:
       TZ: America/Sao_Paulo
@@ -43,12 +43,12 @@ services:
       retries: 3
     labels:
       - traefik.enable=true
-      - traefik.http.routers.sgd.rule=Host(`dashboard.oficialsport.com.br`)
+      - traefik.http.routers.dashboard.rule=Host(`dashboard.oficialsport.com.br`)
       # tls=true (cert interno do Traefik), não tls.certresolver=letsencrypt —
       # mesmo motivo documentado no stack.yml do SGR/administracao: Traefik só
       # na porta 8443 (não a 443 real) faz o desafio TLS-ALPN-01 nunca completar.
-      - traefik.http.routers.sgd.tls=true
-      - traefik.http.services.sgd.loadbalancer.server.port=8113
+      - traefik.http.routers.dashboard.tls=true
+      - traefik.http.services.dashboard.loadbalancer.server.port=8113
     deploy:
       replicas: 1
       update_config:

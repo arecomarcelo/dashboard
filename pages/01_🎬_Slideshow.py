@@ -520,8 +520,8 @@ components.html(
             } catch(e) {}
         }
         setTimeout(ajustarIframes, 150);
-        if (!window.parent._sgdResizeAttached) {
-            window.parent._sgdResizeAttached = true;
+        if (!window.parent._dashboardResizeAttached) {
+            window.parent._dashboardResizeAttached = true;
             window.parent.addEventListener('resize', function() {
                 setTimeout(ajustarIframes, 100);
             });

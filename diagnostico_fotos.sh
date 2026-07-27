@@ -3,7 +3,7 @@
 # Execute este script NO SERVIDOR DE PRODUÇÃO
 
 echo "========================================="
-echo "   DIAGNÓSTICO DE FOTOS - SGD"
+echo "   DIAGNÓSTICO DE FOTOS - DASHBOARD"
 echo "========================================="
 echo ""
 

@@ -378,4 +378,4 @@ Se encontrar problemas:
 
 **Documento criado em:** 27/11/2024
 **Versão:** 1.0
-**Projeto base:** SGD - Sistema de Gestão de Dashboards
+**Projeto base:** DashBoard - Sistema de Gestão de Dashboards

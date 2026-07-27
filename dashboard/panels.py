@@ -1,5 +1,5 @@
 """
-Painéis de visualização para os dashboards do SGD
+Painéis de visualização para os dashboards do DashBoard
 Réplicas EXATAS dos layouts do SGR conforme imagens de referência
 """
 
@@ -22,7 +22,7 @@ except ImportError:
 
 def get_filtros_periodo():
     """
-    Retorna filtros fixos do SGD:
+    Retorna filtros fixos do DashBoard:
     - Data Inicial: 01 do mês atual
     - Data Final: Dia atual
     """
