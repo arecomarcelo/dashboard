@@ -30,9 +30,13 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Achado de auditoria (17/08/2026): estava fixo em True, sem controle por ambiente —
+# inofensivo hoje porque só o Streamlit é exposto em produção (Django nunca serve HTTP,
+# ver Dockerfile/entrypoint.sh), mas é uma bomba-relógio se isso mudar. Segue o mesmo
+# padrão das demais apps do ecossistema: default seguro (False), ligado só via .env local.
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
@@ -133,3 +137,48 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Logging — adicionado na auditoria de 17/08/2026 (achado real: `panels.py` engolia
+# qualquer erro em `except:` genéricos, sem log nenhum, caindo silenciosamente para
+# "R$ 0,00" na tela pública). Mesmo padrão (admin_logger/erro_logger) já usado nas
+# demais apps do ecossistema oficial.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} [{levelname}] {name}: {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+        "dashboard_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": BASE_DIR / "logs" / "dashboard.log",
+            "maxBytes": 10 * 1024 * 1024,
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
+        "erro_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": BASE_DIR / "logs" / "erro.log",
+            "maxBytes": 10 * 1024 * 1024,
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "admin_logger": {
+            "handlers": ["console", "dashboard_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "erro_logger": {
+            "handlers": ["console", "erro_file"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}

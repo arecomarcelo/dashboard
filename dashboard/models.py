@@ -98,6 +98,33 @@ class RPA_Atualizacao(models.Model):
         return f"{self.Periodo} - {self.Data} {self.Hora}"
 
 
+class Log(models.Model):
+    """
+    Log de auditoria compartilhado do legado `sga` (tabela `Log`, mesma estrutura
+    usada em todo o ecossistema oficial: id/NomeUsuario/Acao/Descricao/Data/Hora/
+    Detalhes). Adicionado na auditoria de 17/08/2026 — as gravações da tela
+    "Gerenciar" (Meta/Mensagens/Configuração) não tinham Log Duplo (regra 11 do
+    CLAUDE.md). Ver `dashboard/services.py::registrar_log`.
+    """
+
+    class Meta:
+        db_table = "Log"
+        managed = False
+        ordering = ["-Data", "-Hora"]
+        verbose_name = "Log"
+        verbose_name_plural = "Logs"
+
+    NomeUsuario = models.CharField(max_length=200, verbose_name="Usuário")
+    Acao = models.IntegerField(verbose_name="Ação")
+    Descricao = models.CharField(max_length=200, verbose_name="Descrição")
+    Data = models.DateField(verbose_name="Data")
+    Hora = models.TimeField(verbose_name="Hora")
+    Detalhes = models.TextField(null=True, blank=True, verbose_name="Detalhes")
+
+    def __str__(self):
+        return f"{self.NomeUsuario} - {self.Descricao}"
+
+
 class VendaConfiguracao(models.Model):
     """
     Modelo para armazenar configurações de vendas.

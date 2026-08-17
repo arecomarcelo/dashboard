@@ -10,6 +10,7 @@ import django_setup  # Configura Django ORM
 
 # Importa os modelos Django
 from dashboard.models import Dashboard, Dashboard_Config, VendaConfiguracao, Vendedores
+from dashboard.services import registrar_log
 
 st.set_page_config(page_title="Gerenciar Dashboards", page_icon="⚙️", layout="wide")
 
@@ -58,8 +59,13 @@ with col_meta2:
         if nova_meta and nova_meta.strip():
             try:
                 config_meta = VendaConfiguracao.objects.get(Descricao="Meta")
+                valor_anterior = config_meta.Valor
                 config_meta.Valor = nova_meta.strip()
                 config_meta.save()
+                registrar_log(
+                    f"Dashboard [Gerenciar] - Meta de Vendas alterada de "
+                    f"'{valor_anterior}' para '{nova_meta.strip()}'"
+                )
                 st.success(f"✅ Meta atualizada com sucesso para: {nova_meta}")
                 st.rerun()
             except VendaConfiguracao.DoesNotExist:
@@ -123,6 +129,10 @@ if vendedores_list.exists():
                     vendedor.curto = novo_curto.strip() if novo_curto else ""
                     vendedor.percentual = novo_percentual
                     vendedor.save(update_fields=["curto", "percentual"])
+                    registrar_log(
+                        f"Dashboard [Gerenciar] - Vendedor '{vendedor.nome}' atualizado "
+                        f"(curto='{vendedor.curto}', percentual={vendedor.percentual})"
+                    )
                     st.success(f"✅ Vendedor '{vendedor.nome}' atualizado!")
                     st.rerun()
                 except Exception as e:
@@ -180,6 +190,10 @@ with col_texto2:
             if config_mensagem:
                 config_mensagem.Mensagem = novo_texto.strip() if novo_texto else ""
                 config_mensagem.save()
+                registrar_log(
+                    "Dashboard [Gerenciar] - Texto Dinâmico (Mensagem) alterado para: "
+                    f"'{config_mensagem.Mensagem}'"
+                )
                 st.success("✅ Mensagem atualizada com sucesso!")
                 st.rerun()
             else:
@@ -318,6 +332,10 @@ if dashboards.exists():
                     ):
                         dash.Ativo = not dash.Ativo
                         dash.save()
+                        registrar_log(
+                            f"Dashboard [Gerenciar] - Dashboard '{dash.Nome}' "
+                            f"{'ativado' if dash.Ativo else 'desativado'}"
+                        )
                         st.success(
                             f"Dashboard {'ativado' if dash.Ativo else 'desativado'} com sucesso!"
                         )
@@ -336,6 +354,11 @@ if dashboards.exists():
                         config.Duracao = nova_duracao
                         config.save()
 
+                        registrar_log(
+                            f"Dashboard [Gerenciar] - Dashboard '{dash.Nome}' "
+                            f"atualizado (ordem={nova_ordem}, duração={nova_duracao}s"
+                            f"{', com reordenação dos demais' if ordem_alterada else ''})"
+                        )
                         st.success(
                             f"✅ Dashboard '{dash.Nome}' atualizado com sucesso!"
                         )

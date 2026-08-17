@@ -4,15 +4,19 @@ Réplicas EXATAS dos layouts do SGR conforme imagens de referência
 """
 
 import base64
-from datetime import date, datetime
-from decimal import Decimal
+import logging
+from datetime import date
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
+from django.utils import timezone
 
 from dashboard.models import VendaConfiguracao, VendaProdutos, Vendas, Vendedores
+
+erro_logger = logging.getLogger("erro_logger")
 
 # Import para requirements.txt
 try:
@@ -72,7 +76,11 @@ def get_filtros_periodo():
     - Data Inicial: 01 do mês atual
     - Data Final: Dia atual
     """
-    hoje = datetime.now()
+    # `timezone.localdate()` (Django, timezone-aware) em vez de `datetime.now()` —
+    # achado de auditoria (17/08/2026): funcionava até aqui só porque o container
+    # define TZ=America/Sao_Paulo no SO; frágil (quebraria em dev local ou se a env
+    # var sumisse), regra do projeto é nunca usar horário "naive".
+    hoje = timezone.localdate()
     data_inicial = f"01/{hoje.month:02d}/{hoje.year}"
     data_final = hoje.strftime("%d/%m/%Y")
     return data_inicial, data_final
@@ -87,7 +95,11 @@ def parse_valor(valor):
             return Decimal(str(valor))
         valor_limpo = str(valor).strip().replace(",", ".")
         return Decimal(valor_limpo)
-    except:
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        # Achado de auditoria (17/08/2026): `except:` genérico engolia qualquer erro
+        # e caía para 0 silenciosamente — um dado malformado real apareceria como
+        # "R$ 0,00" na tela pública sem log nenhum. Agora loga o valor problemático.
+        erro_logger.error(f"parse_valor: falha ao converter {valor!r} — {exc}")
         return Decimal("0")
 
 
@@ -100,7 +112,10 @@ def parse_quantidade(quantidade):
             return Decimal(str(quantidade))
         valor_limpo = str(quantidade).strip().replace(",", ".")
         return Decimal(valor_limpo)
-    except:
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        erro_logger.error(
+            f"parse_quantidade: falha ao converter {quantidade!r} — {exc}"
+        )
         return Decimal("0")
 
 
@@ -152,7 +167,11 @@ def get_vendas_periodo():
 
             if data_inicio <= venda.data <= data_fim:
                 vendas_filtradas.append(venda)
-        except:
+        except (AttributeError, TypeError) as exc:
+            erro_logger.error(
+                f"get_vendas_periodo: registro de venda id={getattr(venda, 'id', '?')} "
+                f"pulado — {exc}"
+            )
             continue
 
     return vendas_filtradas
@@ -166,7 +185,10 @@ def render_meta_mes(theme='dark'):
     try:
         meta_config = VendaConfiguracao.objects.filter(Descricao='Meta').first()
         meta_mes = parse_valor(meta_config.Valor) if meta_config else Decimal("0")
-    except:
+    except Exception as exc:
+        # Exceção ampla proposital aqui (não é parsing, é acesso a banco — pode ser
+        # qualquer erro de conectividade) — mas agora logada, não mais silenciosa.
+        erro_logger.error(f"render_meta_mes: falha ao buscar Meta em VendaConfiguracao — {exc}")
         meta_mes = Decimal("0")
 
     # Buscar vendas do período
@@ -597,16 +619,15 @@ def render_ranking_vendedores(theme='dark'):
     Renderiza painel Ranking Vendedores - ADAPT ADO DO SGR
     Lógica completa de cálculos e exibição de fotos do SGR
     """
-    from datetime import datetime
-
     from dateutil.relativedelta import relativedelta
 
     vendedores_tabela = VENDEDORES_TABELA
 
-    # Calcular período atual (mês atual)
-    hoje = datetime.now()
-    data_inicio = datetime(hoje.year, hoje.month, 1).date()
-    data_fim = hoje.date()
+    # Calcular período atual (mês atual) — `timezone.localdate()` em vez de
+    # `datetime.now()` (achado de auditoria, 17/08/2026: ver `get_filtros_periodo`).
+    hoje = timezone.localdate()
+    data_inicio = date(hoje.year, hoje.month, 1)
+    data_fim = hoje
     ano_anterior = (data_inicio - relativedelta(years=1)).year
 
     # Buscar nomes curtos e percentuais dos vendedores

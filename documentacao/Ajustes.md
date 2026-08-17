@@ -249,3 +249,45 @@
 - Falha na notificação nunca bloqueia o deploy (curl não-fatal).
 
 Realizado em Note_Casa via Claude Code.
+
+### **17/08/2026 - Primeira Auditoria de Qualidade/Segurança — 1 CRÍTICA + 6 achados**
+
+App nunca tinha sido auditada (sem `Auditoria de Fidelidade.md`). Escopo adaptado
+(Qualidade de Código + Segurança, sem comparação a legado — DashBoard importa do SGR,
+não do `sga` monólito).
+
+**Achado CRÍTICO real, confirmado ao vivo:** tela "Gerenciar" (`/Gerenciar`) — edita
+Meta de Vendas, Vendedores, Mensagem e Ordem/Duração — respondia `200` publicamente
+sem login nenhum. **Decisão do usuário: "Deixe como está"** — risco aceito
+conscientemente, nenhuma autenticação implementada.
+
+**6 achados corrigidos nesta sessão** (ver `documentacao/Auditoria de Fidelidade.md`
+para o detalhamento completo de cada um):
+1. 4 `except:` genéricos em `panels.py` (engoliam erros, caíam pra R$ 0,00 silencioso)
+   → exceções específicas + log via `erro_logger`. `LOGGING` adicionado a
+   `app/settings.py` (`admin_logger`/`erro_logger`, mesmo padrão do ecossistema).
+2. Zero testes automatizados → 12 testes novos em `dashboard/tests.py` (funções
+   puras de `panels.py` + `dashboard/services.py::registrar_log`).
+3. CRUD sem Log Duplo → `dashboard/models.py` ganhou o model `Log` (tabela real do
+   legado `sga`); `dashboard/services.py` criado com `registrar_log()`; as 6
+   gravações de `pages/02_⚙️_Gerenciar.py` passam a logar (usuário fixo "Dashboard
+   (sem autenticação)", já que não há login — mesmo achado da CRÍTICA #1).
+4. `datetime.now()` sem timezone (2 pontos) → `timezone.localdate()`.
+5. `DEBUG = True` fixo + `ALLOWED_HOSTS = []` → lidos de `.env`, default seguro
+   (`False`/`localhost,127.0.0.1`). Confirmado que produção não tinha essas
+   variáveis — o novo default seguro já se aplica no próximo deploy.
+6. `dashboard/views.py`/`urls.py` (nunca servidos em produção, só Streamlit roda) →
+   comentário explicativo adicionado, sem remoção (decisão de manter por ora).
+
+**Validação:** `manage.py check` limpo em todas as etapas. Testes novos não
+executados a partir do Note_Oficial — `.env` local aponta direto pro Postgres nativo
+de produção e a autenticação falhou desta rede (limitação pré-existente, ver
+`.claude/memory/rotacao_senha_legado_ago2026.md`). Compatibilidade do model `Log`
+novo validada via `INSERT`/`ROLLBACK` direto no Postgres da VPS (SSH).
+
+**Arquivos alterados/criados:** `app/settings.py`, `dashboard/models.py`,
+`dashboard/panels.py`, `dashboard/services.py` (novo), `dashboard/tests.py`,
+`dashboard/urls.py`, `pages/02_⚙️_Gerenciar.py`, `.env.example`, `logs/.gitkeep`,
+`documentacao/Auditoria de Fidelidade.md` (novo).
+
+Realizado em Note_Oficial via Claude Code.
