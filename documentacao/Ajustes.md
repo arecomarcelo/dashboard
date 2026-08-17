@@ -291,3 +291,24 @@ novo validada via `INSERT`/`ROLLBACK` direto no Postgres da VPS (SSH).
 `documentacao/Auditoria de Fidelidade.md` (novo).
 
 Realizado em Note_Oficial via Claude Code.
+
+### **17/08/2026 - Remove código morto do slideshow Django/JS (item 7 revisitado)**
+
+Usuário pediu para investigar a fundo se `views.py`/`urls.py`/`slideshow.html`
+eram mesmo inúteis. Confirmado que sim, e por um motivo mais forte do que "nunca
+servido": `git log` mostra que nasceram no mesmo commit inicial que o Streamlit
+(não foi uma fase anterior descontinuada depois), o `Dockerfile` nunca, em nenhum
+commit já feito, rodou outra coisa além de `streamlit run app.py`, e mesmo se
+ativado manualmente o `slideshow.html` só mostra cards genéricos (Nome/Descrição)
+— sem nenhuma ciência de Vendas/Ranking/Meta/fotos, que hoje são implementados só
+em `panels.py` (Streamlit). Nada mais no ecossistema consome `/api/config/`.
+
+**Removidos:** `dashboard/views.py`, `dashboard/urls.py`,
+`dashboard/templates/dashboard/slideshow.html` (+ diretório `templates/` vazio),
+`include("dashboard.urls")` em `app/urls.py`. `dashboard/admin.py` (Django Admin,
+11 models) **mantido** — achado diferente, nunca superado por nada.
+
+**Validação:** `manage.py check` limpo; suíte completa revalidada, **14/14 OK**
+(rodou localmente desta vez, sem o problema de conectividade da sessão anterior).
+
+Realizado em Note_Oficial via Claude Code.

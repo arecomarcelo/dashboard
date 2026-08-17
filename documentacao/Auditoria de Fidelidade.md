@@ -49,7 +49,7 @@ conectadas direto ao banco nativo do legado `sga` (não ao `sga_multiapp`).
 | 4 | Corrigir agora | `dashboard/models.py` ganhou o model `Log` (mesma tabela/estrutura `Log` do legado `sga`, já usada em todo o ecossistema oficial). `dashboard/services.py::registrar_log` criado (Log Duplo — banco + `admin_logger`). As 6 gravações de `pages/02_⚙️_Gerenciar.py` (Meta, Vendedor, Mensagem, toggle Ativo, Ordem/Duração) chamam `registrar_log` logo após o `.save()`. |
 | 5 | Corrigir agora | `get_filtros_periodo`/`render_ranking_vendedores` trocados para `django.utils.timezone.localdate()`. |
 | 6 | Corrigir agora | `DEBUG`/`ALLOWED_HOSTS` passam a ler de `.env` (default seguro: `DEBUG=False`, `ALLOWED_HOSTS=localhost,127.0.0.1`) — confirmado que a produção não tinha essas variáveis no `.env`, então o novo default seguro já se aplica automaticamente no próximo deploy. `.env.example` atualizado. |
-| 7 | Corrigir agora (documentar, sem remover) | Comentário adicionado no topo de `dashboard/urls.py` explicando que as rotas nunca são servidas em produção — decisão consciente de não remover nesta sessão (fora do escopo de uma auditoria de qualidade tocar em arquitetura). |
+| 7 | **Removido — 17/08/2026 (mesmo dia, revisitado a pedido do usuário)** | Investigação aprofundada confirmou que era código morto de verdade, não só não-servido: `git log` mostra que `views.py`/`urls.py`/`slideshow.html` nasceram no mesmo commit inicial que o Streamlit (não foram uma fase anterior "descontinuada depois") e o `Dockerfile` **nunca**, em nenhuma versão já commitada, rodou outra coisa além de `streamlit run app.py`. Pior: mesmo se ativado manualmente (`manage.py runserver`), o `slideshow.html` só renderiza cards genéricos com Nome/Descrição — sem nenhuma ciência de Vendas/Ranking/Meta/fotos, que hoje são o produto de verdade (só existem em `panels.py`/Streamlit). Nenhum outro ponto do ecossistema consome `/api/config/`. **Removidos:** `dashboard/views.py`, `dashboard/urls.py`, `dashboard/templates/dashboard/slideshow.html` (+ diretório `templates/` vazio) e o `include("dashboard.urls")` em `app/urls.py`. `dashboard/admin.py` (Django Admin, 11 models) **mantido** — achado diferente, nunca superado por nada, ferramenta de backoffice legítima ainda que hoje também não servida. |
 
 **Validação:** `manage.py check` limpo em todas as etapas. Testes novos não puderam ser
 executados nesta sessão a partir do Note_Oficial (`.env` local aponta direto para o
@@ -63,6 +63,6 @@ feita após o deploy (ver `documentacao/Ajustes.md`).
 ### Resultado
 
 CRÍTICAS: 1 (mantida aberta por decisão do usuário) · ALTAS: 0 (2 corrigidas) ·
-MÉDIAS: 0 (1 corrigida) · BAIXAS: 0 (2 corrigidas) · 1 informativo (documentado, sem
-remoção). **Único item aberto é a CRÍTICA de autenticação — risco aceito
+MÉDIAS: 0 (1 corrigida) · BAIXAS: 0 (2 corrigidas) · 1 informativo (removido, código
+morto de verdade). **Único item aberto é a CRÍTICA de autenticação — risco aceito
 conscientemente pelo usuário, não uma falha não tratada.**

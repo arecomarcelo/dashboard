@@ -16,9 +16,14 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
 
+# `dashboard.urls` removido em 17/08/2026 (auditoria de qualidade) — era a
+# implementação Django/JS puro do slideshow (Fase 2 original), nunca servida em
+# produção (Dockerfile sempre rodou só `streamlit run app.py`, desde o primeiro
+# commit) e já superada em conteúdo pelo Streamlit real (`panels.py`). Django
+# segue no projeto só como ORM + Django Admin (`admin.py`, 11 models — ferramenta
+# de backoffice legítima, mantida).
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("dashboard.urls")),
 ]
