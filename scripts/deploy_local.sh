@@ -115,21 +115,21 @@ else
 fi
 echo ""
 
-# ─── Notificar deploy ao InfraFlow ───────────────────────────────────────────
+# ─── Notificar deploy ao CoreFlow Infra ───────────────────────────────────────────
 if [ -n "$OFICIAL_DEPLOY_TOKEN" ]; then
-    echo -e "${CYAN}▶ Notificando deploy ao InfraFlow...${NC}"
+    echo -e "${CYAN}▶ Notificando deploy ao CoreFlow Infra...${NC}"
     DESCRICAO=$(git log -1 --pretty=%s | sed 's/"/\\"/g')
-    if curl -sf -X POST "https://infraflow.hauxtech.com.br/api/v1/deploy/" \
+    if curl -sf -X POST "https://coreflow-infra.hauxtech.com.br/api/v1/deploy/" \
         -H "Authorization: Bearer ${OFICIAL_DEPLOY_TOKEN}" \
         -H "Content-Type: application/json" \
         -d "{\"nome_app\": \"dashboard\", \"versao\": \"$(git rev-parse --short HEAD)\", \"descricao\": \"${DESCRICAO}\", \"realizado_em\": \"$(TZ='America/Sao_Paulo' date -Iseconds)\"}" \
         > /dev/null; then
-        echo -e "${GREEN}✅ Deploy registrado no InfraFlow.${NC}"
+        echo -e "${GREEN}✅ Deploy registrado no CoreFlow Infra.${NC}"
     else
-        echo -e "${YELLOW}⚠️  Não foi possível notificar o InfraFlow (deploy já concluído normalmente).${NC}"
+        echo -e "${YELLOW}⚠️  Não foi possível notificar o CoreFlow Infra (deploy já concluído normalmente).${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠️  OFICIAL_DEPLOY_TOKEN não configurado — deploy não notificado ao InfraFlow.${NC}"
+    echo -e "${YELLOW}⚠️  OFICIAL_DEPLOY_TOKEN não configurado — deploy não notificado ao CoreFlow Infra.${NC}"
 fi
 echo ""
 
