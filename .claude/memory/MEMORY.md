@@ -1,0 +1,1 @@
+- [Sincronização de memórias](sincronizacao-memorias.md) — hooks .githooks ativos desde 05/10/2026; checar canônico x repo antes do 1º commit em máquina nova

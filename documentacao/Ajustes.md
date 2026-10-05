@@ -312,3 +312,15 @@ em `panels.py` (Streamlit). Nada mais no ecossistema consome `/api/config/`.
 (rodou localmente desta vez, sem o problema de conectividade da sessão anterior).
 
 Realizado em Note_Oficial via Claude Code.
+
+### **20:56 - Commit 29**
+
+- Configurada a sincronização de memórias entre máquinas via git hooks (mesmo padrão do `cadastros`):
+    - `.githooks/pre-commit`: copia as memórias locais para `.claude/memory/` e as inclui no commit
+    - `.githooks/post-merge` / `.githooks/post-checkout`: restauram as memórias do repositório após `git pull`/checkout
+    - `scripts/claude-sync-push.sh` / `scripts/claude-sync-pull.sh`: scripts de sincronização usados pelos hooks
+    - Hooks e scripts versionados como executáveis (100755), evitando a falha de propagação vista em outros projetos
+- `.gitignore`: excluídos os arquivos locais de configuração (`.claude/settings.local.json`, `.claude/*.json`, `.claude/commands/`), mantendo `.claude/memory/` rastreado
+- `.claude/memory/`: índice inicial com a memória sobre o funcionamento da sincronização
+
+Realizado em Note_Casa via Claude Code.

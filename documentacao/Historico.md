@@ -4498,3 +4498,29 @@ O domínio `dashboard.oficialsport.com.br` já está provisionado e validado em 
 - 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
 
 ---
+
+## 📅 05/10/2026
+
+### ⏰ 20:56 - Sincronização de Memórias entre Máquinas
+
+**📋 O que foi pedido:**
+Configurar a sincronização de memórias do projeto via git (skill `com-sincronizar-memorias`).
+
+**🔧 Detalhamento da Solução:**
+- 🪝 Criados os hooks `pre-commit` (local → repositório), `post-merge` e `post-checkout` (repositório → local) em `.githooks/`, idênticos aos do `cadastros`
+- 📜 Criados `scripts/claude-sync-push.sh` e `scripts/claude-sync-pull.sh`
+- 🔐 Todos versionados como executáveis (100755) — sem isso os hooks não rodam e o índice pode ser truncado
+- ⚙️ `core.hooksPath = .githooks` ativado na Note_Casa (precisa ser feito uma vez em cada máquina)
+- 🙈 `.gitignore`: ignorados os JSONs locais, `.claude/memory/` segue rastreado
+- 🧠 Memória inicial registrada e sincronizada para `.claude/memory/`
+
+**📁 Arquivos Alterados:**
+- ➕ **CRIADO**: `.githooks/pre-commit`, `.githooks/post-merge`, `.githooks/post-checkout`
+- ➕ **CRIADO**: `scripts/claude-sync-push.sh`, `scripts/claude-sync-pull.sh`
+- ➕ **CRIADO**: `.claude/memory/MEMORY.md`, `.claude/memory/sincronizacao-memorias.md`
+- 📝 **ALTERADO**: `.gitignore`
+- 📝 **ATUALIZADO**: `documentacao/Ajustes.md`, `documentacao/Historico.md` - Registro desta interação
+
+Realizado em Note_Casa via Claude Code.
+
+---

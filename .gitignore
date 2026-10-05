@@ -101,3 +101,8 @@ logs/
 *.bak
 *.orig
 *.rej
+
+# Claude CLI — arquivos locais (não sincronizar)
+.claude/settings.local.json
+.claude/*.json
+.claude/commands/
