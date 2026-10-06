@@ -4524,3 +4524,24 @@ Configurar a sincronização de memórias do projeto via git (skill `com-sincron
 Realizado em Note_Casa via Claude Code.
 
 ---
+
+### ⏰ 21:06 - Ambiente Local: .env, Aliases e Clone Produção → Local
+
+**📋 O que foi pedido:**
+1) Gerar o `.env` de acordo com o de produção; 2) Gerar os aliases da app; 3) Clonar os dados de produção no banco local.
+
+**🔧 Detalhamento da Solução:**
+- 🔐 **`.env` local**: mesmas chaves de produção (`DB_*`, `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`), com valores locais — banco `sga_backup` (espelho do `sga`) no container `sga_db_local` (`localhost:5440`), `SECRET_KEY` nova, `DEBUG=True`. Nenhum segredo de produção copiado. Arquivo ignorado pelo git, permissão 600.
+- 🔗 **Aliases**: `rodar-dashboard`, `predeploy-dashboard` e `deploy-dashboard` já existiam no `~/.zshrc` e `~/.bashrc`, mas apontavam para o caminho antigo `Oficial-Antigos/sgd` — repontados para `~/Projetos/Oficial/dashboard` (backup dos arquivos de shell mantido).
+- 🗄️ **Clone**: exportados **somente os dados** das 12 tabelas usadas pela app (`pg_dump --data-only` no `sga` nativo da VPS) e recarregados no `sga_backup` local em uma única transação, com checagens de FK suspensas durante a carga. Estrutura, views (`vw_total_vendas`, `vw_levantamento_vendas`) e tabelas de outras apps que referenciam `Produtos`/`RPA`/`Vendas` ficaram intactas.
+- ✅ **Validação**: estrutura prod × local idêntica (94 colunas); contagem idêntica nas 12 tabelas (ex.: Vendas 4.941, VendaProdutos 46.490, Log 140.752, Dashboard 6 — inclui o "Resumo Dia"); última venda 05/10/2026 nos dois lados; 0 itens órfãos; `manage.py check` limpo; Streamlit respondeu `200` no health check na porta 8001.
+
+**📁 Arquivos Alterados:**
+- ➕ **CRIADO**: `.env` (local, fora do git)
+- 📝 **ALTERADO** (fora do repositório): `~/.zshrc`, `~/.bashrc`
+- 🗄️ **BANCO** (fora do repositório): `sga_backup` local — 12 tabelas recarregadas a partir de produção
+- 📝 **ATUALIZADO**: `documentacao/Historico.md` - Registro desta interação
+
+Realizado em Note_Casa via Claude Code.
+
+---

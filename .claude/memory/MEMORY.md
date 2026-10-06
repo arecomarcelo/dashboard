@@ -1,1 +1,2 @@
 - [Sincronização de memórias](sincronizacao-memorias.md) — hooks .githooks ativos desde 05/10/2026; checar canônico x repo antes do 1º commit em máquina nova
+- [Ambiente local e banco](ambiente-local-banco.md) — .env local → sga_backup:5440; reclonar 12 tabelas data-only sem quebrar FKs/views

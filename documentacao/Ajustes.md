@@ -324,3 +324,15 @@ Realizado em Note_Oficial via Claude Code.
 - `.claude/memory/`: índice inicial com a memória sobre o funcionamento da sincronização
 
 Realizado em Note_Casa via Claude Code.
+
+### **21:06 - Commit 30**
+
+- Ambiente local configurado na Note_Casa (sem alteração de código da aplicação):
+    - `.env` local com as mesmas chaves de produção e valores locais — banco `sga_backup` (espelho do `sga`) no container `sga_db_local` (`localhost:5440`); arquivo fora do git
+    - Aliases `rodar-dashboard`, `predeploy-dashboard` e `deploy-dashboard` repontados do caminho antigo `Oficial-Antigos/sgd` para `~/Projetos/Oficial/dashboard`
+    - Clone Produção → Local dos dados das 12 tabelas da aplicação, sem alterar estrutura, views ou tabelas de outras apps; contagens idênticas às de produção
+- `documentacao/Historico.md`: registro da interação
+- `.claude/memory/`: nova memória com a configuração do ambiente local e o procedimento de clone
+- % Desenvolvido mantido em 100% (36/36)
+
+Realizado em Note_Casa via Claude Code.
