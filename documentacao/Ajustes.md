@@ -344,3 +344,11 @@ Realizado em Note_Casa via Claude Code.
 - A onda 1 (estoque, relatorios, comex, rpa, financeiro) foi aprovada pelas verificações C1/C2/C3: pico máximo de 72,1% do limite e 0 OOM em 24 h.
 
 Realizado em Note_Oficial via Claude Code.
+
+### **13:40 - Commit 32**
+
+- `stack.yml`: removidos os labels `traefik.*` do `web` (e os comentários sobre o TLS do Traefik) — o stack Traefik foi removido da VPS em 06/10/2026 (auditoria Hostinger, decisão D4) e os labels não tinham mais efeito.
+- A rede `traefik_public` foi mantida e documentada no `stack.yml`: o monitor-oficial checa o `/health` das apps pela rede interna do Swarm (`http://<stack>_web:<porta>/health`), e dashboard e relatorios só são alcançáveis por ela.
+- Sem deploy dedicado: a mudança entra em produção no próximo deploy da app (labels inertes, sem efeito funcional).
+
+Realizado em Note_Oficial via Claude Code.

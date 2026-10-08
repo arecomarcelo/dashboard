@@ -4553,3 +4553,9 @@ Realizado em Note_Casa via Claude Code.
 - ⚙️ **Solução:** limite em `web` (256 MiB) no `stack.yml` (pico de 7 dias × 1,5), protegendo o host compartilhado contra consumo descontrolado.
 - 📂 **Arquivos:** `stack.yml`, `documentacao/Ajustes.md`, `documentacao/Historico.md`.
 - 🖥️ Realizado em Note_Oficial via Claude Code.
+
+### 🕐 13:40 — Remoção dos labels do Traefik (auditoria Hostinger)
+- 📝 **Pedido:** limpeza dos labels `traefik.*`, que ficaram inertes com a remoção do Traefik.
+- ⚙️ **Solução:** labels removidos do `stack.yml`; rede `traefik_public` mantida e documentada (é usada pelo health check do monitor-oficial). Entra em produção no próximo deploy.
+- 📂 **Arquivos:** `stack.yml`, `documentacao/Ajustes.md`, `documentacao/Historico.md`.
+- 🖥️ Realizado em Note_Oficial via Claude Code.
