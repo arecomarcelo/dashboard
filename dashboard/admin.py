@@ -1,12 +1,11 @@
 from django.contrib import admin
 
 from .models import (
-    RPA,
     Dashboard,
     Dashboard_Config,
     Dashboard_Log,
     Produtos,
-    RPA_Atualizacao,
+    ControleAtualizacao,
     VendaProdutos,
     Vendas,
     VendasSituacao,
@@ -233,39 +232,15 @@ class VendaProdutosAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(RPA)
-class RPAAdmin(admin.ModelAdmin):
+@admin.register(ControleAtualizacao)
+class ControleAtualizacaoAdmin(admin.ModelAdmin):
     """
-    Administração do modelo RPA (somente leitura).
-    Tabela existente no banco de dados.
-    """
-
-    list_display = ('Nome', 'Descricao')
-    search_fields = ('Nome', 'Descricao')
-    ordering = ('Nome',)
-    readonly_fields = ('Nome', 'Descricao')
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
-@admin.register(RPA_Atualizacao)
-class RPAAtualizacaoAdmin(admin.ModelAdmin):
-    """
-    Administração do modelo RPA_Atualizacao.
+    Administração do controle de atualização dos RPAs (somente leitura).
     """
 
-    list_display = ('RPA', 'Periodo', 'Data', 'Hora', 'Inseridos', 'Atualizados')
-    list_filter = ('RPA', 'Periodo', 'Data')
-    search_fields = ('RPA__Nome', 'Periodo', 'Data')
-    ordering = ('-Data', '-Hora')
-    readonly_fields = ('RPA', 'Data', 'Hora', 'Periodo', 'Inseridos', 'Atualizados')
+    list_display = ('rpa_id', 'modo', 'periodo', 'fim', 'inseridos', 'atualizados')
+    list_filter = ('rpa_id', 'modo')
+    ordering = ('-fim',)
 
     def has_add_permission(self, request):
         """Desabilita a criação manual."""

@@ -15,14 +15,15 @@ deixando explícito no próprio log que a app não identifica o autor real.
 
 import logging
 
-from django.utils import timezone
-
 from dashboard.models import Log
 
 admin_logger = logging.getLogger("admin_logger")
 erro_logger = logging.getLogger("erro_logger")
 
 USUARIO_SEM_AUTENTICACAO = "Dashboard (sem autenticação)"
+
+# Preenche `Log.Modulo` — mesmo padrão de `settings.NOME_APP` das demais apps.
+NOME_APP = "dashboard"
 
 # Códigos de ação — mesmo padrão do restante do ecossistema oficial.
 ACAO_INCLUSAO = 4
@@ -34,14 +35,12 @@ def registrar_log(descricao: str, acao: int = ACAO_ALTERACAO) -> None:
     """Grava o Log Duplo (banco + sistema) de uma alteração feita na tela
     "Gerenciar". Nunca levanta exceção — uma falha ao logar não pode derrubar a
     gravação de negócio que já aconteceu."""
-    agora = timezone.localtime()
     try:
         Log.objects.create(
             NomeUsuario=USUARIO_SEM_AUTENTICACAO,
+            Modulo=NOME_APP,
             Acao=acao,
             Descricao=descricao[:200],
-            Data=agora.date(),
-            Hora=agora.time(),
         )
     except Exception as exc:
         erro_logger.error(f"registrar_log: falha ao gravar em Log (banco) — {exc}")

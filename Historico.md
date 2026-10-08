@@ -2,6 +2,27 @@
 
 ---
 
+## 📅 08/10/2026
+
+### 🕐 14:32 — Migração do DashBoard para o oficial_db (etapa 28)
+
+**📝 O que foi pedido:** seguir com o Plano de Implementação - Migração RPA para Oficial DB (multi-aplicacao) — etapa 28, DashBoard deixando de ler o legado `sga`.
+
+**🔧 Solução:**
+- 🗄️ Tabelas próprias (`Dashboard`, `Dashboard_Config`, `Dashboard_Log`) no novo schema `dashboard` (`managed=True`), com uma `0001_initial` limpa no lugar das migrations da época do legado.
+- 📊 Vendas, itens, meta, vendedores e situações lidos do schema `vendas`; produtos de `compartilhado."Produtos"`.
+- 🕐 Rodapé "Data Atualização" passa a vir de `rpa."ControleAtualizacao"` (última execução do RPA de Vendas), no lugar do `RPA_Atualizacao`.
+- 📝 Log Duplo no padrão de `compartilhado."Log"` (`Modulo=dashboard`).
+- 🐳 `stack.yml` na rede `oficial_db_net` (sem `extra_hosts`) e `migrate dashboard` no entrypoint.
+- 🧪 Validado no local: 14 testes, Slideshow e Gerenciar executados sem exceção, Meta salva pela tela com alerta de sucesso e Log.
+- 🚦 Branch `migracao-oficial-db`: publicação só no corte coordenado da Onda 3 (etapa 32).
+
+**📁 Arquivos alterados:** `app/settings.py`, `dashboard/models.py`, `dashboard/admin.py`, `dashboard/services.py`, `dashboard/migrations/` (0001 nova, 0002–0004 removidas), `pages/01_🎬_Slideshow.py`, `entrypoint.sh`, `stack.yml`, `.env.example`, `documentacao/Ajustes.md`, `Historico.md`.
+
+*Realizado em Note_Oficial via Claude Code.*
+
+---
+
 ## 📅 11/05/2026
 
 ### 🕐 09:47 — Verificação Geral: Correção de Tipos de Campos dos Modelos
