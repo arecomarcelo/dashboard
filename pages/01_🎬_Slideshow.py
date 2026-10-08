@@ -12,13 +12,14 @@ import streamlit.components.v1 as components
 from streamlit_autorefresh import st_autorefresh
 
 import django_setup  # Configura Django ORM
+from django.utils import timezone
 
 # Importa os modelos Django
 from dashboard.models import (
+    ControleAtualizacao,
     Dashboard,
     Dashboard_Config,
     Dashboard_Log,
-    RPA_Atualizacao,
 )
 
 # Importa os painéis customizados
@@ -471,12 +472,14 @@ else:
         unsafe_allow_html=True,
     )
 
-# Buscar informações de atualização (filtrar apenas RPA_id = 7)
+# Última atualização do RPA de Vendas (rpa_id = 7) no controle oficial
 try:
-    rpa_atualizacao = RPA_Atualizacao.objects.filter(RPA_id=7).latest('id')
-    periodo = rpa_atualizacao.Periodo
-    data_atualizacao = f"{rpa_atualizacao.Data} {rpa_atualizacao.Hora}"
-except RPA_Atualizacao.DoesNotExist:
+    rpa_atualizacao = ControleAtualizacao.objects.filter(rpa_id=7).latest('fim')
+    periodo = rpa_atualizacao.periodo or "N/A"
+    data_atualizacao = timezone.localtime(rpa_atualizacao.fim).strftime(
+        "%d/%m/%Y %H:%M"
+    )
+except ControleAtualizacao.DoesNotExist:
     periodo = "N/A"
     data_atualizacao = "N/A"
 

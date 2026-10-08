@@ -1,11 +1,11 @@
 # Stack Docker Swarm — DashBoard (Multi-Aplicação Oficial)
 #
-# Mesmo padrão do SGR (ver documentacao/): o DashBoard fala diretamente com o
-# Postgres NATIVO do host (banco "sga", live/transacional), não com o
-# container sga_db. Por isso não entra na rede sga_db_net — usa extra_hosts
-# (host-gateway) para alcançar o Postgres do host a partir do container,
-# sem sair para a internet pública (porta 5432 hoje exposta e sob varredura
-# de bots — ver memória de segurança).
+# Banco: oficial_db (container oficial_container), pela rede oficial_db_net —
+# tabelas próprias no schema `dashboard`, vendas/meta/vendedores no schema
+# `vendas`, controle de atualização em `rpa`, Log em `compartilhado`. Até a
+# Onda 3 do Plano de Implementação - Migração RPA para Oficial DB
+# (multi-aplicacao) lia o Postgres nativo do host (banco "sga") via
+# extra_hosts/host-gateway.
 #
 # Réplica única (replicas: 1): o DashBoard guarda estado de sessão em memória
 # do processo (st.session_state, ver pages/01_🎬_Slideshow.py) — múltiplas
@@ -30,12 +30,11 @@ services:
       - "--server.headless=true"
       - "--browser.gatherUsageStats=false"
       - "--server.enableWebsocketCompression=false"
-    extra_hosts:
-      - "host-postgres:host-gateway"
     ports:
       - "127.0.0.1:8113:8113"
     networks:
       - traefik_public
+      - oficial_db_net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8113/_stcore/health"]
       interval: 30s
@@ -66,4 +65,6 @@ networks:
   # (http://<stack>_web:<porta>/health), e dashboard e relatorios só são alcançáveis por ela
   # (não estão na rede monitoring). Não remover.
   traefik_public:
+    external: true
+  oficial_db_net:
     external: true

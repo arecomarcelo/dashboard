@@ -8,8 +8,7 @@ class Dashboard(models.Model):
     """
 
     class Meta:
-        db_table = "Dashboard"
-        managed = False
+        db_table = '"dashboard"."Dashboard"'
         ordering = ["Nome"]
         verbose_name = "Dashboard"
         verbose_name_plural = "Dashboards"
@@ -31,8 +30,7 @@ class Dashboard_Config(models.Model):
     """
 
     class Meta:
-        db_table = "Dashboard_Config"
-        managed = False
+        db_table = '"dashboard"."Dashboard_Config"'
         ordering = ["Ordem"]
         verbose_name = "Dashboard Configuração"
         verbose_name_plural = "Dashboard Configurações"
@@ -50,76 +48,64 @@ class Dashboard_Config(models.Model):
         return f"{self.Ordem} - {self.Dashboard.Nome} ({self.Duracao}s)"
 
 
-class RPA(models.Model):
+class ControleAtualizacao(models.Model):
     """
-    Modelo para armazenar informações sobre RPAs.
-    Tabela existente no banco de dados (não gera migração).
-    """
-
-    class Meta:
-        db_table = "RPA"
-        managed = False
-        verbose_name = "RPA"
-        verbose_name_plural = "RPAs"
-
-    Nome = models.CharField(max_length=255, verbose_name="Nome")
-    Descricao = models.CharField(
-        max_length=255, verbose_name="Descrição", null=True, blank=True
-    )
-
-    def __str__(self):
-        return self.Nome
-
-
-class RPA_Atualizacao(models.Model):
-    """
-    Modelo para armazenar informações sobre atualizações de RPAs.
+    Espelho somente-leitura de `rpa."ControleAtualizacao"` (app dona: rpa) —
+    uma linha por execução concluída de cada RPA. Substitui o `RPA_Atualizacao`
+    do legado (etapa 05 do Plano de Implementação - Migração RPA para Oficial
+    DB, repositório multi-aplicacao): a última atualização de um RPA é a linha
+    mais recente por `fim`.
     """
 
     class Meta:
-        db_table = "RPA_Atualizacao"
+        db_table = '"rpa"."ControleAtualizacao"'
         managed = False
-        ordering = ["Data"]
-        verbose_name = "RPA Atualização"
-        verbose_name_plural = "RPA Atualizações"
+        ordering = ["-fim"]
+        verbose_name = "Controle de Atualização"
+        verbose_name_plural = "Controles de Atualização"
 
-    Data = models.CharField(max_length=100, verbose_name="Data")
-    Hora = models.CharField(max_length=100, verbose_name="Hora")
-    Periodo = models.CharField(
+    rpa_id = models.IntegerField(verbose_name="RPA")
+    execucao_id = models.BigIntegerField(null=True, blank=True)
+    modo = models.CharField(max_length=20, verbose_name="Modo")
+    periodo = models.CharField(
         max_length=100, null=True, blank=True, verbose_name="Período"
     )
-    Inseridos = models.CharField(max_length=100, verbose_name="Inseridos")
-    Atualizados = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Atualizados"
-    )
-    RPA = models.ForeignKey(RPA, on_delete=models.CASCADE, verbose_name="RPA")
+    inicio = models.DateTimeField(verbose_name="Início")
+    fim = models.DateTimeField(verbose_name="Fim")
+    inseridos = models.IntegerField(verbose_name="Inseridos")
+    atualizados = models.IntegerField(verbose_name="Atualizados")
+    ignorados = models.IntegerField(verbose_name="Ignorados")
+    falhas = models.IntegerField(verbose_name="Falhas")
+    checkpoint = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.Periodo} - {self.Data} {self.Hora}"
+        return f"RPA {self.rpa_id} - {self.fim:%d/%m/%Y %H:%M}"
 
 
 class Log(models.Model):
     """
-    Log de auditoria compartilhado do legado `sga` (tabela `Log`, mesma estrutura
-    usada em todo o ecossistema oficial: id/NomeUsuario/Acao/Descricao/Data/Hora/
-    Detalhes). Adicionado na auditoria de 17/08/2026 — as gravações da tela
-    "Gerenciar" (Meta/Mensagens/Configuração) não tinham Log Duplo (regra 11 do
-    CLAUDE.md). Ver `dashboard/services.py::registrar_log`.
+    Espelho de `compartilhado."Log"` (app dona: administracao), o log de
+    auditoria comum a todo o ecossistema oficial. Adicionado na auditoria de
+    17/08/2026 — as gravações da tela "Gerenciar" (Meta/Mensagens/Configuração)
+    não tinham Log Duplo (regra 11 do CLAUDE.md). Ver
+    `dashboard/services.py::registrar_log`.
     """
 
     class Meta:
-        db_table = "Log"
+        db_table = '"compartilhado"."Log"'
         managed = False
-        ordering = ["-Data", "-Hora"]
+        ordering = ["-Data"]
         verbose_name = "Log"
         verbose_name_plural = "Logs"
 
     NomeUsuario = models.CharField(max_length=200, verbose_name="Usuário")
+    Modulo = models.CharField(
+        max_length=100, blank=True, default="", verbose_name="Módulo"
+    )
     Acao = models.IntegerField(verbose_name="Ação")
     Descricao = models.CharField(max_length=200, verbose_name="Descrição")
-    Data = models.DateField(verbose_name="Data")
-    Hora = models.TimeField(verbose_name="Hora")
-    Detalhes = models.TextField(null=True, blank=True, verbose_name="Detalhes")
+    Data = models.DateTimeField(auto_now_add=True, verbose_name="Data")
+    Detalhes = models.JSONField(null=True, blank=True, verbose_name="Detalhes")
 
     def __str__(self):
         return f"{self.NomeUsuario} - {self.Descricao}"
@@ -132,7 +118,7 @@ class VendaConfiguracao(models.Model):
     """
 
     class Meta:
-        db_table = "VendaConfiguracao"
+        db_table = '"vendas"."VendaConfiguracao"'
         managed = False
         verbose_name = "Venda Configuração"
         verbose_name_plural = "Vendas Configurações"
@@ -151,8 +137,7 @@ class Dashboard_Log(models.Model):
     """
 
     class Meta:
-        db_table = "Dashboard_Log"
-        managed = False
+        db_table = '"dashboard"."Dashboard_Log"'
         ordering = ["-DataHora_Inicio"]
         verbose_name = "Dashboard Log"
         verbose_name_plural = "Dashboard Logs"
@@ -191,7 +176,7 @@ class Vendas(models.Model):
     """
 
     class Meta:
-        db_table = "Vendas"
+        db_table = '"vendas"."Vendas"'
         managed = False
         verbose_name = "Venda"
         verbose_name_plural = "Vendas"
@@ -231,7 +216,7 @@ class Vendedores(models.Model):
     """
 
     class Meta:
-        db_table = "Vendedores"
+        db_table = '"vendas"."Vendedores"'
         managed = False
         verbose_name = "Vendedor"
         verbose_name_plural = "Vendedores"
@@ -251,7 +236,7 @@ class Produtos(models.Model):
     """
 
     class Meta:
-        db_table = "Produtos"
+        db_table = '"compartilhado"."Produtos"'
         managed = False
         verbose_name = "Produto"
         verbose_name_plural = "Produtos"
@@ -290,13 +275,13 @@ class VendasSituacao(models.Model):
     """
 
     class Meta:
-        db_table = "VendasSituacao"
+        db_table = '"vendas"."VendasSituacao"'
         managed = False
         verbose_name = "Venda Situação"
         verbose_name_plural = "Vendas Situações"
 
     situacaonome = models.CharField(
-        db_column="SituacaoNome", max_length=100, blank=True, null=True
+        db_column="SituacaoNome", max_length=100, primary_key=True
     )
 
     def __str__(self):
@@ -310,7 +295,7 @@ class VendaProdutos(models.Model):
     """
 
     class Meta:
-        db_table = "VendaProdutos"
+        db_table = '"vendas"."VendaProdutos"'
         managed = False
         verbose_name = "Venda Produto"
         verbose_name_plural = "Venda Produtos"

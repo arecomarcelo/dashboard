@@ -352,3 +352,16 @@ Realizado em Note_Oficial via Claude Code.
 - Sem deploy dedicado: a mudança entra em produção no próximo deploy da app (labels inertes, sem efeito funcional).
 
 Realizado em Note_Oficial via Claude Code.
+
+### **14:32 - Commit — Migração do DashBoard para o oficial_db (etapa 28, branch `migracao-oficial-db`)**
+
+- `dashboard/models.py`: `Dashboard`, `Dashboard_Config` e `Dashboard_Log` passam a `managed=True` no schema `dashboard`; `Vendas`, `VendaProdutos`, `Vendedores`, `VendasSituacao` e `VendaConfiguracao` viram espelhos de `vendas.*` (app dona: vendas); `Produtos` de `compartilhado."Produtos"`; `Log` de `compartilhado."Log"` (`Modulo`, `Data` timestamptz, `Detalhes` JSON); `RPA`/`RPA_Atualizacao` substituídos por `ControleAtualizacao` (`rpa."ControleAtualizacao"`).
+- `dashboard/migrations/`: 0001–0004 da época do legado substituídas por uma `0001_initial` que cria só as 3 tabelas do schema `dashboard` (autorizado pelo usuário).
+- `pages/01_🎬_Slideshow.py`: última atualização do RPA de Vendas (7) por `fim`, exibida em horário local.
+- `dashboard/services.py`: `registrar_log` grava `Modulo=dashboard` (sem `Hora`).
+- `dashboard/admin.py`: admin somente leitura do controle de atualização no lugar dos de `RPA`/`RPA_Atualizacao`.
+- `app/settings.py`: `search_path` via `DB_SCHEMA` (padrão `dashboard`).
+- `stack.yml`: rede `oficial_db_net`, sem `extra_hosts`; `entrypoint.sh`: `migrate dashboard`; `.env.example`: `oficial_db` e `DB_SCHEMA`.
+- Validação local contra o `oficial_db`: 14 testes OK; Slideshow e Gerenciar via `AppTest` sem exceção; Meta salva pela tela e restaurada.
+- Publicação só no corte coordenado da Onda 3 (etapa 32), após a carga única da configuração (`multi-aplicacao/scripts/carga_configuracao_dashboard.sh`).
+- Realizado em Note_Oficial via Claude Code.

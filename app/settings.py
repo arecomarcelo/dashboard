@@ -93,6 +93,13 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", ""),
         "PORT": os.environ.get("DB_PORT", "5432"),
+        # oficial_db: tabelas próprias no schema `dashboard` (onde também fica
+        # o `django_migrations`); as demais são lidas por nome qualificado
+        # (vendas, rpa, compartilhado). Plano de Implementação - Migração RPA
+        # para Oficial DB, etapa 28.
+        "OPTIONS": {
+            "options": f"-c search_path={os.environ.get('DB_SCHEMA', 'dashboard')}"
+        },
     }
 }
 
