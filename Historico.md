@@ -4,6 +4,23 @@
 
 ## 📅 08/10/2026
 
+### 🕒 15:17 — Corte da Onda 3: DashBoard em produção sobre o oficial_db
+
+**📝 O que foi pedido:** executar o corte coordenado da Onda 3 (etapa 32 do Plano de Implementação - Migração RPA para Oficial DB, multi-aplicacao).
+
+**🔧 Solução:**
+- 🔀 Merge do branch `migracao-oficial-db` no `master` e deploy às 15:11. O `migrate` criou `Dashboard`, `Dashboard_Config` e `Dashboard_Log` no schema `dashboard`.
+- 🔐 Nova role `dashboard_user`, dona do schema `dashboard`. A senha foi gerada na VPS e nunca exibida, e o `.env` da VPS aponta para o `oficial_db` com `DB_SCHEMA=dashboard`.
+- 📦 Configuração copiada uma única vez do legado: 6 painéis, 12 vendedores e a Meta.
+- ✅ Smoke test: conexão `dashboard_user`/`oficial_db`, 4.952 vendas, os 5 painéis ativos, rodapé com a última execução do RPA de Vendas e health 200.
+- ↩️ Rollback: `.env.bak-pre-corte-20261008-1510` + imagem `sha256:82188bf7…`.
+
+**📁 Arquivos alterados:** `Historico.md`, `documentacao/Ajustes.md`.
+
+*Realizado em Note_Oficial via Claude Code.*
+
+---
+
 ### 🕐 14:32 — Migração do DashBoard para o oficial_db (etapa 28)
 
 **📝 O que foi pedido:** seguir com o Plano de Implementação - Migração RPA para Oficial DB (multi-aplicacao) — etapa 28, DashBoard deixando de ler o legado `sga`.

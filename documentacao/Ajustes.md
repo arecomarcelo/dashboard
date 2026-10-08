@@ -365,3 +365,11 @@ Realizado em Note_Oficial via Claude Code.
 - Validação local contra o `oficial_db`: 14 testes OK; Slideshow e Gerenciar via `AppTest` sem exceção; Meta salva pela tela e restaurada.
 - Publicação só no corte coordenado da Onda 3 (etapa 32), após a carga única da configuração (`multi-aplicacao/scripts/carga_configuracao_dashboard.sh`).
 - Realizado em Note_Oficial via Claude Code.
+
+### **15:40 - Commit — Corte da Onda 3: DashBoard em produção sobre o oficial_db**
+
+- Merge do branch `migracao-oficial-db` (`c2b2ed5`) e deploy às 15:11; `migrate dashboard` criou o schema próprio em produção.
+- Banco: role `dashboard_user` (dona do schema `dashboard`; leitura de `vendas.*`, `rpa."ControleAtualizacao"` e `compartilhado."Produtos"`; SELECT/UPDATE em `Vendedores`/`VendaConfiguracao`; SELECT/INSERT em `compartilhado."Log"`). `.env` da VPS com `DB_*` do `oficial_db` e `DB_SCHEMA=dashboard`; backup `.env.bak-pre-corte-20261008-1510`.
+- Carga única do legado: 6 painéis, 6 configs, 12 vendedores, Meta (`multi-aplicacao/scripts/carga_configuracao_dashboard.sh`).
+- Smoke test em produção OK (conexão, dados, painéis, rodapé, health 200). Rollback: `.env` de backup + imagem `sha256:82188bf7…`.
+- Realizado em Note_Oficial via Claude Code.

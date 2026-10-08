@@ -4,4 +4,4 @@
 - [Visão Geral do Projeto DashBoard (ex-SGD)](projeto_dashboard_visao_geral.md) — conecta direto no banco legado `sga`; gotcha recorrente de tipo de coluna divergindo do model managed=False
 - [Rename SGD → DashBoard](rename_sgd_dashboard.md) — histórico do ajuste de nome (pasta, repo, produção Swarm) em 27/07/2026
 - [Rotação LEGADO_DB_PASSWORD (ago/2026)](rotacao_senha_legado_ago2026.md) — postgres nativo do sga legado trocado em 05/08/2026, corrigido preventivamente (mesmo padrão do incidente do relatorios)
-- [Migração para o oficial_db (branch)](migracao_oficial_db_dashboard.md) — etapa 28 em 08/10/2026 no branch migracao-oficial-db; só publicar no corte (etapa 32)
+- [Migração para o oficial_db (branch)](migracao_oficial_db_dashboard.md) — em produção sobre o oficial_db desde o corte da Onda 3 (08/10/2026); role dashboard_user, schema dashboard
