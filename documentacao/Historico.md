@@ -4545,3 +4545,11 @@ Realizado em Note_Casa via Claude Code.
 Realizado em Note_Casa via Claude Code.
 
 ---
+
+## 📅 08/10/2026
+
+### 🕚 11:20 — Limite de memória nos serviços (auditoria Hostinger, Fase 6, onda 2)
+- 📝 **Pedido:** seguir com a auditoria Hostinger — onda 2 de limites de memória.
+- ⚙️ **Solução:** limite em `web` (256 MiB) no `stack.yml` (pico de 7 dias × 1,5), protegendo o host compartilhado contra consumo descontrolado.
+- 📂 **Arquivos:** `stack.yml`, `documentacao/Ajustes.md`, `documentacao/Historico.md`.
+- 🖥️ Realizado em Note_Oficial via Claude Code.

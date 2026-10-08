@@ -336,3 +336,11 @@ Realizado em Note_Casa via Claude Code.
 - % Desenvolvido mantido em 100% (36/36)
 
 Realizado em Note_Casa via Claude Code.
+
+### **11:20 - Commit 31**
+
+- `stack.yml`: limite de memória (`deploy.resources.limits.memory`) em `web` (256 MiB).
+- Fase 6 da auditoria Hostinger, onda 2: limite = pico de 7 dias × 1,5, em múltiplos de 64 MiB, com piso de 256 MiB (web/Celery) e 128 MiB (Redis/beat). Picos recalculados em 08/10/2026 no Prometheus (cAdvisor, passo de 1 min). É um teto contra consumo descontrolado no host compartilhado, não uma reserva.
+- A onda 1 (estoque, relatorios, comex, rpa, financeiro) foi aprovada pelas verificações C1/C2/C3: pico máximo de 72,1% do limite e 0 OOM em 24 h.
+
+Realizado em Note_Oficial via Claude Code.
