@@ -1,3 +1,5 @@
+- [Sincronização de memórias](sincronizacao-memorias.md) — hooks .githooks ativos desde 05/10/2026; checar canônico x repo antes do 1º commit em máquina nova
+- [Ambiente local e banco](ambiente-local-banco.md) — .env local → sga_backup:5440; reclonar 12 tabelas data-only sem quebrar FKs/views
 - ✅ [Porta 8113 exposta na internet, corrigida](porta-8113-exposta-corrigida-17-08.md) — bug do Docker Swarm ingress, mitigado via iptables DROP (17/08/2026)
 - [Visão Geral do Projeto DashBoard (ex-SGD)](projeto_dashboard_visao_geral.md) — conecta direto no banco legado `sga`; gotcha recorrente de tipo de coluna divergindo do model managed=False
 - [Rename SGD → DashBoard](rename_sgd_dashboard.md) — histórico do ajuste de nome (pasta, repo, produção Swarm) em 27/07/2026
