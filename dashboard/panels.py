@@ -32,7 +32,7 @@ VENDEDORES_TABELA = [
     {"nome": "Nilton Jonas Gonçalves de Moraes", "foto": "2"},
     {"nome": "César Henrique Rodrigues", "foto": "3"},
     {"nome": "Rocha Jr.", "foto": "4"},
-    {"nome": "Diney Scalabrini", "foto": "5"},
+    {"nome": "Valdiney Scalabrini", "foto": "5"},
     {"nome": "João Paulo", "foto": "6"},
     {"nome": "Lauro Jarbas de Oliveira", "foto": "7"},
     {"nome": "Giovana Lelis", "foto": "8"},

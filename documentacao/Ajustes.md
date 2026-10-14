@@ -373,3 +373,9 @@ Realizado em Note_Oficial via Claude Code.
 - Carga única do legado: 6 painéis, 6 configs, 12 vendedores, Meta (`multi-aplicacao/scripts/carga_configuracao_dashboard.sh`).
 - Smoke test em produção OK (conexão, dados, painéis, rodapé, health 200). Rollback: `.env` de backup + imagem `sha256:82188bf7…`.
 - Realizado em Note_Oficial via Claude Code.
+
+## 14/10/2026
+
+### **14:24 - Commit — Vendedor renomeado: Diney → Valdiney Scalabrini**
+- `dashboard/panels.py`: `VENDEDORES_TABELA` passa a usar "Valdiney Scalabrini" (foto 5). O Gestão Click renomeou o vendedor (mesmo `vendedor_id` 1015571, conferido na API em 14/10/2026) e devolve o nome atual em todas as vendas; o cadastro `vendas."Vendedores"` é corrigido pela migration `0006` do app Vendas. Sem esta troca, ele ficaria sem foto no ranking e no resumo do dia.
+- Realizado em Note_Oficial via Claude Code.
