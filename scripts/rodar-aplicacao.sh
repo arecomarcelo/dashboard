@@ -43,10 +43,10 @@ info "Verificando .env..."
 ok ".env presente"
 
 # Sem Docker/Redis/migrations aqui: diferente das apps Multi-Aplicação (admini
-# stracao/financeiro/estoque), o DashBoard é sistema legado (Streamlit + Django
-# ORM) que conecta direto no banco `sga` já existente — sem banco local
-# espelhado, sem Celery/Redis, e todos os modelos são managed=False (sem
-# migrations).
+# stracao/financeiro/estoque), o DashBoard é Streamlit + Django ORM sobre o
+# oficial_db (sga_db_local, porta 5440): tabelas próprias no schema `dashboard`,
+# demais lidas por nome qualificado; sem Celery/Redis. As migrations do schema
+# `dashboard` rodam no entrypoint do deploy.
 
 # ─── 3. Subir Streamlit ────────────────────────────────────────────────────────
 echo ""

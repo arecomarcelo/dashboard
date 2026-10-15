@@ -379,3 +379,11 @@ Realizado em Note_Oficial via Claude Code.
 ### **14:24 - Commit — Vendedor renomeado: Diney → Valdiney Scalabrini**
 - `dashboard/panels.py`: `VENDEDORES_TABELA` passa a usar "Valdiney Scalabrini" (foto 5). O Gestão Click renomeou o vendedor (mesmo `vendedor_id` 1015571, conferido na API em 14/10/2026) e devolve o nome atual em todas as vendas; o cadastro `vendas."Vendedores"` é corrigido pela migration `0006` do app Vendas. Sem esta troca, ele ficaria sem foto no ranking e no resumo do dia.
 - Realizado em Note_Oficial via Claude Code.
+
+## 15/10/2026
+
+### **08:35 - Commit — Remove resíduos do legado sga (etapa 33 da migração RPA)**
+- `app/settings.py`: defaults do banco trocados de `sga`/`postgres`/host vazio para `oficial_db`/`dashboard_user`/`localhost` (produção sempre usa o `.env`).
+- `scripts/deploy_local.sh`, `scripts/rodar-aplicacao.sh`, `scripts/predeploy.sh` e `dashboard/tests.py`: comentários e docstring descrevem o `oficial_db` (schema `dashboard` + leitura qualificada), não mais o `sga`.
+- Fora do git: `.env` local passa a usar o `oficial_db` local com a nova role `dashboard_user` (mesmos privilégios de produção); o `.env.bak-pre-corte` da VPS, com a credencial do legado, foi apagado.
+- Realizado em Note_Oficial via Claude Code.

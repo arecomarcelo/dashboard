@@ -18,8 +18,9 @@
 #   - docker login ghcr.io -u arecomarcelo
 #   - /home/deploy/apps/dashboard já clonado na VPS (git clone git@github.com:
 #     arecomarcelo/dashboard.git /home/deploy/apps/dashboard)
-#   - .env real em /home/deploy/apps/dashboard/.env (DB_HOST=host-postgres,
-#     DB_NAME=sga, DB_USER/DB_PASSWORD reais, SECRET_KEY)
+#   - .env real em /home/deploy/apps/dashboard/.env (DB_HOST=oficial_container,
+#     DB_NAME=oficial_db, DB_USER=dashboard_user + DB_PASSWORD, DB_SCHEMA=dashboard,
+#     SECRET_KEY)
 #   - DNS dashboard.oficialsport.com.br → 195.200.1.244 (Traefik só roteia
 #     depois disso propagar; até lá dá pra validar via porta publicada/curl
 #     --resolve)

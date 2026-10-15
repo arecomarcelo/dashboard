@@ -5,9 +5,8 @@ Achado de auditoria (17/08/2026): `dashboard/tests.py` era o stub vazio padrão 
 `startapp`, zero cobertura. Escopo aqui: as funções puras de `panels.py` (parsing/
 formatação/cálculo de período) — não dependem de banco, então rodam com o test
 runner padrão do Django sem infraestrutura extra (os demais models são
-`managed=False` sobre tabelas do legado `sga`, fora do escopo de teste automatizado
-por ora — mesma decisão já tomada em `comex`/`monitor-rpa` para apps que conectam
-direto ao legado).
+`managed=False` sobre tabelas de outros schemas do `oficial_db` — vendas, rpa,
+compartilhado —, fora do escopo de teste automatizado por ora).
 
 Rodar: `python manage.py test dashboard`
 """

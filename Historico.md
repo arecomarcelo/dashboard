@@ -2,6 +2,21 @@
 
 ---
 
+## 📅 15/10/2026
+
+### 🕣 08:35 — Remoção dos resíduos do legado sga (etapa 33 da migração RPA)
+
+**📝 O que foi pedido:** finalizar a etapa 33 do Plano de Implementação - Migração RPA para Oficial DB (multi-aplicacao): tirar credenciais e variáveis do `sga`.
+
+**🔧 Solução:**
+- ⚙️ Defaults do `settings.py` apontam para `oficial_db`/`dashboard_user`.
+- 🔐 `.env` local saiu do legado de produção e passou ao `oficial_db` local (`dashboard_user` criado no `sga_db_local`, dono do schema `dashboard`); 14 testes OK.
+- 🧹 Comentários/docstrings atualizados; `.env.bak` com credencial do legado apagado na VPS.
+
+**📁 Arquivos:** `app/settings.py`, `dashboard/tests.py`, `scripts/deploy_local.sh`, `scripts/predeploy.sh`, `scripts/rodar-aplicacao.sh`, `documentacao/Ajustes.md`, `Historico.md`
+
+---
+
 ## 📅 08/10/2026
 
 ### 🕒 15:17 — Corte da Onda 3: DashBoard em produção sobre o oficial_db

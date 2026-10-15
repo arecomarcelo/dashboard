@@ -5,10 +5,10 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 13266d95-7b49-4e18-a05a-cb8f3d2267c2
-  modified: 2026-10-06T00:06:54.960Z
+  modified: 2026-10-15T11:40:00.000Z
 ---
 
-Produção lê o `sga` nativo da Hostinger (DB_HOST=host-postgres). Localmente o `.env` aponta para o espelho `sga_backup` no container `sga_db_local` (localhost:5440, usuário postgres — mesma senha local do `.env` do cadastros), com DEBUG=True e SECRET_KEY própria. Nenhum segredo de produção no `.env` local. Configurado em 05/10/2026 — Realizado em Note_Casa via Claude Code.
+**Superado em parte (15/10/2026):** desde o corte da Onda 3 (08/10) produção lê o `oficial_db`, e na Note_Oficial o `.env` local aponta para o `oficial_db` local com `dashboard_user` (ver [[migracao-oficial-db-dashboard]]). O conteúdo abaixo vale só para o espelho antigo. Antes: produção lia o `sga` nativo da Hostinger (DB_HOST=host-postgres). Localmente o `.env` apontava para o espelho `sga_backup` no container `sga_db_local` (localhost:5440, usuário postgres — mesma senha local do `.env` do cadastros), com DEBUG=True e SECRET_KEY própria. Nenhum segredo de produção no `.env` local. Configurado em 05/10/2026 — Realizado em Note_Casa via Claude Code.
 
 Clone Produção → Local das 12 tabelas do app (Dashboard, Dashboard_Config, Dashboard_Log, Vendas, VendaProdutos, Vendedores, Produtos, VendasSituacao, VendaConfiguracao, RPA, RPA_Atualizacao, Log): `ssh root@195.200.1.244 "sudo -u postgres pg_dump -d sga -Fc --data-only -t '\"public\".\"<T>\"' ..."` → `pg_restore -f -` → SQL com `SET session_replication_role = replica; DELETE FROM` das 12 → `psql -1 -v ON_ERROR_STOP=1`.
 

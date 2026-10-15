@@ -88,10 +88,10 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "sga"),
-        "USER": os.environ.get("DB_USER", "postgres"),
+        "NAME": os.environ.get("DB_NAME", "oficial_db"),
+        "USER": os.environ.get("DB_USER", "dashboard_user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", ""),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
         "PORT": os.environ.get("DB_PORT", "5432"),
         # oficial_db: tabelas próprias no schema `dashboard` (onde também fica
         # o `django_migrations`); as demais são lidas por nome qualificado

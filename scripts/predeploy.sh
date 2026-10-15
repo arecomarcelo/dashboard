@@ -14,8 +14,8 @@
 #   5. bash scripts/deploy_local.sh
 #
 # Diferente de administracao/comex/estoque/financeiro: o DashBoard é sistema
-# legado (mesmo padrão do SGR) — sem migrações Django novas (modelos já
-# existem no banco, todos managed=False), sem % Desenvolvido/Score de
+# legado (mesmo padrão do SGR) — migrations só do schema próprio `dashboard`
+# no oficial_db (aplicadas no entrypoint), sem % Desenvolvido/Score de
 # Implantação, sem Celery/Redis.
 ################################################################################
 
