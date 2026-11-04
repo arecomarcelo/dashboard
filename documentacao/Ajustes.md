@@ -396,3 +396,7 @@ Realizado em Note_Oficial via Claude Code.
 - Resumo do Dia: produtos centralizados (flex com quebra, até 5 por linha, no lugar do grid de 5 colunas fixas); card de vendedor alargado (100→130px, celular 80→110px) e valor sem quebra de linha.
 - Validação: 14 testes OK, `makemigrations --check` sem alterações, screenshots a 1600px e 400px.
 - Realizado em Note_Oficial via Claude Code.
+
+### **14:10 - Commit — Memória do Ranking pelo "Exibir no Ranking"**
+- `.claude/memory/`: nova memória `vendedores-exibir-ranking.md` (fonte dos vendedores do Ranking e do Resumo do Dia, sem voltar à lista fixa nem mexer no model `managed=False`) e índice `MEMORY.md` atualizado. Sem alteração de código nem deploy.
+- Realizado em Note_Oficial via Claude Code.

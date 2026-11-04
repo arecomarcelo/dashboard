@@ -5,3 +5,4 @@
 - [Rename SGD → DashBoard](rename_sgd_dashboard.md) — histórico do ajuste de nome (pasta, repo, produção Swarm) em 27/07/2026
 - [Rotação LEGADO_DB_PASSWORD (ago/2026)](rotacao_senha_legado_ago2026.md) — postgres nativo do sga legado trocado em 05/08/2026, corrigido preventivamente (mesmo padrão do incidente do relatorios)
 - [Migração para o oficial_db (branch)](migracao_oficial_db_dashboard.md) — em produção sobre o oficial_db desde o corte da Onda 3 (08/10/2026); role dashboard_user, schema dashboard
+- [Vendedores pelo Exibir no Ranking](vendedores-exibir-ranking.md) — Ranking e Resumo do Dia leem vendas."Vendedores" WHERE "ExibirRanking" + Foto do banco desde 04/11/2026 (d5d3589)
