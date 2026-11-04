@@ -2,6 +2,54 @@
 
 ---
 
+## 📅 04/11/2026
+
+### 🕑 14:20 — Card de Vendedor do Resumo do Dia mais largo
+
+**📝 O que foi pedido:** alargar o card de vendedor do Resumo do Dia, porque o valor quebrava em duas linhas ("R$" / "1.500,00").
+
+**🔧 Solução:**
+- 📏 Card de 100px → 130px (celular: 80px → 110px), com `white-space: nowrap` no valor.
+- 📱 No celular, a fonte do valor cai de 1.05rem para 0.9rem para caber até R$ 125.430,50.
+- ✅ Conferido em screenshot a 1600px e a 400px com R$ 125.430,50, R$ 1.500,00 e R$ 300,00, todos numa linha. 14 testes OK.
+
+**📁 Arquivos alterados:** `dashboard/panels.py`, `Historico.md`
+
+*Realizado em Note_Oficial via Claude Code.*
+
+---
+
+### 🕑 14:12 — Resumo do Dia também pelo "Exibir no Ranking"
+
+**📝 O que foi pedido:** aplicar no painel Resumo do Dia (Vendas Diárias) o mesmo critério do Ranking de Vendedores.
+
+**🔧 Solução:**
+- 👥 Os cards de Vendedores do Resumo do Dia passaram a usar `get_vendedores_ranking()`, com a foto do banco, em vez da lista fixa `VENDEDORES_TABELA`. Essa lista agora serve só como fallback de foto.
+- 💰 O total do dia continua somando todas as vendas, inclusive as de vendedores ocultos: a coluna só decide quem aparece.
+- ✅ Teste com vendas fictícias de Noé, Nilton (desmarcado) e Giovana: 2 cards (Noé e Giovana) e total de R$ 2.700,00. 14 testes OK.
+
+**📁 Arquivos alterados:** `dashboard/panels.py`, `Historico.md`
+
+*Realizado em Note_Oficial via Claude Code.*
+
+---
+
+### 🕑 14:03 — Produtos centralizados no Resumo do Dia e Ranking de Vendedores pelo "Exibir no Ranking"
+
+**📝 O que foi pedido:** (1) centralizar os produtos no painel de Vendas Diárias (Resumo do Dia); (2) no Ranking de Vendedores, usar o mesmo critério de exibição da app Vendas (`Vendedores.ExibirRanking`).
+
+**🔧 Solução:**
+- 🎯 **Produtos (Resumo do Dia):** `.produtos-linha` deixou de ser um grid de 5 colunas fixas, que encostava as linhas incompletas à esquerda, e passou a flex com quebra (até 5 por linha, ou 2 no celular) e `justify-content: center`.
+- 👥 **Ranking de Vendedores:** novo helper `get_vendedores_ranking()` lê `vendas."Vendedores" WHERE "ExibirRanking"`, a mesma consulta do `relatorios`. A lista fixa de 12 nomes saiu do ranking, e vendedores novos marcados na app Vendas passam a aparecer. Nome curto e % de meta vêm da mesma consulta, e a foto vem do banco; se não houver foto no banco, usa a antiga de `imagens/fotos/` e, sem nenhuma, as iniciais. Os cálculos de valores e metas não mudaram.
+- 🧱 SQL direto em vez de campo novo no model `managed=False`, para não gerar migração (regra 08).
+- ✅ Banco local: 11 vendedores no ranking (Nilton, desmarcado, saiu), todos com foto do banco. 14 testes OK, `makemigrations --check` sem alterações, painéis renderizados e conferidos em screenshot.
+
+**📁 Arquivos alterados:** `dashboard/panels.py`, `Historico.md`
+
+*Realizado em Note_Oficial via Claude Code.*
+
+---
+
 ## 📅 15/10/2026
 
 ### 🕣 08:35 — Remoção dos resíduos do legado sga (etapa 33 da migração RPA)

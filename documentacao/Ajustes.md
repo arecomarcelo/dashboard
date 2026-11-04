@@ -387,3 +387,12 @@ Realizado em Note_Oficial via Claude Code.
 - `scripts/deploy_local.sh`, `scripts/rodar-aplicacao.sh`, `scripts/predeploy.sh` e `dashboard/tests.py`: comentários e docstring descrevem o `oficial_db` (schema `dashboard` + leitura qualificada), não mais o `sga`.
 - Fora do git: `.env` local passa a usar o `oficial_db` local com a nova role `dashboard_user` (mesmos privilégios de produção); o `.env.bak-pre-corte` da VPS, com a credencial do legado, foi apagado.
 - Realizado em Note_Oficial via Claude Code.
+
+## 04/11/2026
+
+### **14:24 - Commit — Ranking e Resumo do Dia pelo "Exibir no Ranking" e produtos centralizados**
+- `dashboard/panels.py`: novo `get_vendedores_ranking()` lê `vendas."Vendedores" WHERE "ExibirRanking"` (mesmo critério do `relatorios`), com nome curto, % de meta e foto do banco. Se faltar foto no banco, usa a de `imagens/fotos/` e, sem nenhuma, as iniciais. Usa SQL direto, sem alterar o model `managed=False` (regra 08).
+- Ranking de Vendedores e cards de Vendedores do Resumo do Dia passam a usar esse cadastro no lugar da lista fixa `VENDEDORES_TABELA`, que fica só como fallback de foto. Totais e metas continuam somando todas as vendas.
+- Resumo do Dia: produtos centralizados (flex com quebra, até 5 por linha, no lugar do grid de 5 colunas fixas); card de vendedor alargado (100→130px, celular 80→110px) e valor sem quebra de linha.
+- Validação: 14 testes OK, `makemigrations --check` sem alterações, screenshots a 1600px e 400px.
+- Realizado em Note_Oficial via Claude Code.

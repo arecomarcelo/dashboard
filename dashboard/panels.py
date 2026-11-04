@@ -26,7 +26,7 @@ except ImportError:
     pass
 
 # Lista completa de vendedores (mesma ordem do SGR) — Nome → ID da foto (1-12.png)
-# Compartilhada entre render_ranking_vendedores e render_resumo_dia.
+# Usada só como fallback de foto (imagens/fotos/) em get_vendedores_ranking.
 VENDEDORES_TABELA = [
     {"nome": "Noé Dutra", "foto": "1"},
     {"nome": "Nilton Jonas Gonçalves de Moraes", "foto": "2"},
@@ -56,6 +56,52 @@ def get_vendedor_foto(foto_id):
             except Exception:
                 continue
     return None
+
+
+def get_vendedores_ranking():
+    """Vendedores exibidos no Ranking de Vendedores, com a foto do cadastro.
+
+    Mesmo critério do `relatorios`: fonte `vendas."Vendedores"` (tela
+    Vendedores da app vendas) e só entra quem tem `ExibirRanking` marcado — a
+    coluna decide apenas quem aparece; os cálculos de vendas e metas não mudam.
+    A foto vem do banco (PNG já reduzido); sem foto no banco, usa a foto antiga
+    de `imagens/fotos/` pela lista fixa e, sem nenhuma, as iniciais. SQL direto
+    para não alterar o model `managed=False` (regra 08).
+    """
+    from django.db import connection
+
+    fotos_antigas = {v["nome"]: v["foto"] for v in VENDEDORES_TABELA}
+    query = (
+        'SELECT "Nome", "Curto", "Percentual", "Foto" '
+        'FROM vendas."Vendedores" WHERE "ExibirRanking" ORDER BY "Nome"'
+    )
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            linhas = cursor.fetchall()
+    except Exception as e:
+        erro_logger.info(f"Erro: falha ao buscar vendedores do Ranking: {e}")
+        return []
+
+    vendedores = []
+    for nome, curto, percentual, foto in linhas:
+        if foto:
+            foto_base64 = "data:image/png;base64," + base64.b64encode(
+                bytes(foto)
+            ).decode("utf-8")
+        elif nome in fotos_antigas:
+            foto_base64 = get_vendedor_foto(fotos_antigas[nome])
+        else:
+            foto_base64 = None
+        vendedores.append(
+            {
+                "nome": nome,
+                "nome_curto": curto or nome,
+                "percentual": float(percentual) if percentual else 0.0,
+                "foto_base64": foto_base64,
+            }
+        )
+    return vendedores
 
 
 def get_gradient(rank):
@@ -621,7 +667,8 @@ def render_ranking_vendedores(theme='dark'):
     """
     from dateutil.relativedelta import relativedelta
 
-    vendedores_tabela = VENDEDORES_TABELA
+    # Quem aparece e a foto vêm do cadastro (ExibirRanking), igual ao relatorios
+    vendedores_tabela = get_vendedores_ranking()
 
     # Calcular período atual (mês atual) — `timezone.localdate()` em vez de
     # `datetime.now()` (achado de auditoria, 17/08/2026: ver `get_filtros_periodo`).
@@ -629,17 +676,6 @@ def render_ranking_vendedores(theme='dark'):
     data_inicio = date(hoje.year, hoje.month, 1)
     data_fim = hoje
     ano_anterior = (data_inicio - relativedelta(years=1)).year
-
-    # Buscar nomes curtos e percentuais dos vendedores
-    dados_vendedores = {}
-    try:
-        for v in Vendedores.objects.all():
-            dados_vendedores[v.nome] = {
-                "curto": v.curto if v.curto else v.nome,
-                "percentual": float(v.percentual) if v.percentual else 0.0,
-            }
-    except Exception:
-        pass
 
     # Calcular vendas do mesmo período no ano anterior via ORM
     def calcular_vendas_periodo_anterior(data_inicio, data_fim):
@@ -697,9 +733,8 @@ def render_ranking_vendedores(theme='dark'):
     vendedores_completos = []
     for vendedor in vendedores_tabela:
         nome = vendedor["nome"]
-        dados_vend = dados_vendedores.get(nome, {})
-        nome_curto = dados_vend.get("curto", nome)
-        percentual_meta = dados_vend.get("percentual", 0.0)
+        nome_curto = vendedor["nome_curto"]
+        percentual_meta = vendedor["percentual"]
         vendas_ant = float(vendas_periodo_anterior.get(nome, 0))
         total_valor = (
             float(vendedores_stats[nome]["total"]) if nome in vendedores_stats else 0.0
@@ -709,7 +744,7 @@ def render_ranking_vendedores(theme='dark'):
             {
                 "nome": nome,
                 "nome_curto": nome_curto,
-                "foto": vendedor["foto"],
+                "foto_base64": vendedor["foto_base64"],
                 "total_valor": total_valor,
                 "vendas_ano_anterior": vendas_ant,
                 "percentual_meta": percentual_meta,
@@ -742,8 +777,8 @@ def render_ranking_vendedores(theme='dark'):
             (vendedor["total_valor"] / meta * 100) if meta > 0 else 0
         )
 
-        # Carregar foto
-        foto_base64 = get_vendedor_foto(vendedor["foto"])
+        # Foto do cadastro (ou fallback já resolvido em get_vendedores_ranking)
+        foto_base64 = vendedor["foto_base64"]
 
         # Avatar HTML
         if foto_base64:
@@ -1475,7 +1510,7 @@ def render_resumo_dia(theme='dark'):
     vendas_dia = get_vendas_dia_atual()
     total_dia = sum(parse_valor(v.valortotal) for v in vendas_dia)
 
-    # --- Vendedores: total do dia por vendedor (mesma lista fixa do Ranking) ---
+    # --- Vendedores: total do dia por vendedor (mesmos do Ranking: ExibirRanking) ---
     vendedores_stats = {}
     for venda in vendas_dia:
         vendedor = venda.vendedornome
@@ -1485,13 +1520,14 @@ def render_resumo_dia(theme='dark'):
             vendedor, Decimal("0")
         ) + parse_valor(venda.valortotal)
 
+    # Mesmo critério do Ranking de Vendedores: cadastro com ExibirRanking
     vendedores_dia = [
         {
             "nome": vendedor["nome"],
-            "foto": vendedor["foto"],
+            "foto_base64": vendedor["foto_base64"],
             "total_valor": float(vendedores_stats.get(vendedor["nome"], Decimal("0"))),
         }
-        for vendedor in VENDEDORES_TABELA
+        for vendedor in get_vendedores_ranking()
     ]
     # Somente vendedores com vendas hoje
     vendedores_dia_ordenados = sorted(
@@ -1502,7 +1538,7 @@ def render_resumo_dia(theme='dark'):
 
     vendedores_cards_html = ""
     for vendedor in vendedores_dia_ordenados:
-        foto_base64 = get_vendedor_foto(vendedor["foto"])
+        foto_base64 = vendedor["foto_base64"]
         if foto_base64:
             avatar_html = f'<img src="{foto_base64}" class="vendedor-avatar-img" />'
         else:
@@ -1695,7 +1731,7 @@ def render_resumo_dia(theme='dark'):
                     text-align: center;
                     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
                     border: 1px solid #44475a;
-                    width: 100px;
+                    width: 130px;
                     flex-shrink: 0;
                     display: flex;
                     flex-direction: column;
@@ -1735,6 +1771,7 @@ def render_resumo_dia(theme='dark'):
                     font-size: 1.05rem;
                     font-weight: 700;
                     letter-spacing: -0.5px;
+                    white-space: nowrap;
                 }}
 
                 /* Seção Produtos: preenche o restante da tela, cards padronizados
@@ -1745,15 +1782,20 @@ def render_resumo_dia(theme='dark'):
                     flex-direction: column;
                     min-height: 0;
                 }}
+                /* Flex com quebra (até 5 por linha) em vez de grid de 5 colunas
+                   fixas: assim linhas incompletas ficam centralizadas */
                 .produtos-linha {{
                     flex: 1 1 auto;
                     min-height: 0;
-                    display: grid;
-                    grid-template-columns: repeat(5, 170px);
-                    grid-auto-rows: min-content;
+                    display: flex;
+                    flex-wrap: wrap;
                     gap: 16px;
                     justify-content: center;
                     align-content: center;
+                    align-items: flex-start;
+                    width: 100%;
+                    max-width: calc(5 * 170px + 4 * 16px);
+                    margin: 0 auto;
                     overflow: hidden;
                 }}
                 .produto-card {{
@@ -1820,8 +1862,9 @@ def render_resumo_dia(theme='dark'):
                 @media (max-width: 600px) {{
                     .resumo-container {{ padding: 15px 15px 10px 15px; }}
                     .resumo-title {{ font-size: 1.5rem; }}
-                    .vendedor-card {{ width: 80px; }}
-                    .produtos-linha {{ grid-template-columns: repeat(2, 130px); }}
+                    .vendedor-card {{ width: 110px; }}
+                    .vendedor-valor {{ font-size: 0.9rem; }}
+                    .produtos-linha {{ max-width: calc(2 * 130px + 16px); }}
                     .produto-card {{ width: 130px; }}
                 }}
             </style>
